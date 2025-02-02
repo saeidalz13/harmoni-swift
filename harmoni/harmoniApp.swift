@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// app entry point
 @main
 struct harmoniApp: App {
     var body: some Scene {
