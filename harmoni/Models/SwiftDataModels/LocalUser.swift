@@ -17,9 +17,9 @@ final class LocalUser {
     @Attribute(.unique) var email: String
     var firstName: String
     var lastName: String
-    var partnerID: String?
-    var familyName: String?
-    var familyCreatedAt: Date?
+    @Attribute(.unique) var partnerID: String?
+    @Attribute(.unique) var familyID: String?
+    var familyTitle: String?
     
     init(
         id: String,
@@ -27,15 +27,13 @@ final class LocalUser {
         lastName: String,
         email: String,
         partnerID: String? = nil,
-        familyName: String? = nil,
-        familyCreatedAt: Date? = nil
+        familyTitle: String? = nil
     ) {
         self.id = id
         self.firstName = firstName
         self.lastName = lastName
         self.email = email
         self.partnerID = partnerID
-        self.familyName = familyName
-        self.familyCreatedAt = familyCreatedAt
+        self.familyTitle = familyTitle
     }
 }

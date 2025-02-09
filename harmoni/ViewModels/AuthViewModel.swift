@@ -9,7 +9,8 @@ import SwiftUI
 @Observable
 class AuthViewModel {
     private var isLoggedIn: Bool = false
-    private var userID: String = ""
+    private var userId: String = ""
+    private var email: String = ""
     private var networkManager: NetworkManager
     private var graphQLManager: GraphQLManager
     
@@ -27,9 +28,10 @@ class AuthViewModel {
     /*
      Setters
      */
-    func setAuthorized(userID: String) {
+    func setAuthorized(userId: String, email: String) {
         isLoggedIn = true
-        self.userID = userID
+        self.userId = userId
+        self.email = email
     }
     
     /*
@@ -39,8 +41,8 @@ class AuthViewModel {
         return isLoggedIn
     }
     
-    func getUserID() -> String {
-        return userID
+    func getEmail() -> String {
+        return email
     }
     
     func getWsObject() -> URLSessionWebSocketTask? {
@@ -68,7 +70,7 @@ class AuthViewModel {
                     if oAuthResp.isAuth {
                         await MainActor.run {
                             showSafariView = false
-                            setAuthorized(userID: oAuthResp.userId)
+                            setAuthorized(userId: oAuthResp.userId, email: oAuthResp.email)
                         }
                     }
                 }
@@ -76,17 +78,17 @@ class AuthViewModel {
                 networkManager.closeWebSocketConn(ws: ws)
             
             } catch {
-                await MainActor.run {
-                    showSafariView = false
-                }
-                
                 if let ws = ws {
-                    ws.cancel(with: URLSessionWebSocketTask.CloseCode.normalClosure, reason: nil)
+                    networkManager.closeWebSocketConn(ws: ws)
                 }
                 alertMessage = "Sorry! Unable to sign in at this time"
                 showAlert = true
                 
-                print("Error: \(error.localizedDescription)")
+                print("Failed Sign In Google: \(error)")
+                
+                await MainActor.run {
+                    showSafariView = false
+                }
             }
         }
     }

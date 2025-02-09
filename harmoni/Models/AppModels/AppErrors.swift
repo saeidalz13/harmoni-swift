@@ -11,7 +11,7 @@ enum DataSerializationError: Error, LocalizedError {
     case textToDataEncoding
     case dataToTextDecoding
     case jsonEncoding
-    case jsonDecoding(data: Data)
+    case jsonDecoding(data: Data, error: Error)
     case unknown(Error)
 
     var localizedDescription: String? {
@@ -22,8 +22,8 @@ enum DataSerializationError: Error, LocalizedError {
             return "Failed to convert data to text."
         case .jsonEncoding:
             return "Failed to encode object to JSON."
-        case .jsonDecoding(let data):
-            return "Failed to decode JSON to object: \(data)"
+        case .jsonDecoding(let data, let error):
+            return "Failed to decode JSON to object: \(data) \(error.localizedDescription)"
         case .unknown(let error):
             return error.localizedDescription
         }

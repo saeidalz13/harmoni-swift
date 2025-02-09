@@ -24,7 +24,7 @@ struct HomeView: View {
             
             VStack {
                 HStack{
-                    Text("Hello \(authViewModel.getUserID())").font(.title)
+                    Text("Hello \(authViewModel.getEmail())").font(.title)
                 }
                 
                 HStack {

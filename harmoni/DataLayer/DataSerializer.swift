@@ -27,7 +27,7 @@ enum DataSerializer {
             return try decoder.decode(T.self, from: data)
             
         } catch {
-            throw DataSerializationError.jsonDecoding(data: data)
+            throw DataSerializationError.jsonDecoding(data: data, error: error)
         }
     }
 }

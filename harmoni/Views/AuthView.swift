@@ -8,8 +8,6 @@
 import SwiftUI
 import SafariServices
 
-
-
 struct AuthView: View {
     @Environment(AuthViewModel.self) private var authViewModel
     

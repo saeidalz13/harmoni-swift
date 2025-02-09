@@ -13,11 +13,3 @@ struct OAuth2RedirectLinkResponse: Decodable {
     let oauth2RedirectLink: String
 }
 
-struct UserInfo: Decodable {
-    let id: String
-    let email: String
-    let firstName: String?
-    let lastName: String?
-    let familyName: String?
-    // other stuff for home (any crucial/recent/summary info)
-}
