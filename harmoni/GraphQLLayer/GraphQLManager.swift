@@ -6,14 +6,19 @@
 //
 import Foundation
 
-
-class GraphQLManager {
+@Observable class GraphQLManager {
     private var backendUrl = URL(string: "http://localhost:1919/query")!
     
-    func queryWithoutInputs<T: Decodable>(queryName: String) async throws -> GraphQLData<T> {
+    func createGQLRequest() -> URLRequest {
         var request = URLRequest(url: backendUrl)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        return request
+    }
+    
+    func queryWithoutInputs<T: Decodable>(queryName: String) async throws -> GraphQLData<T> {
+        var request = createGQLRequest()
         
         let query = """
         {

@@ -7,6 +7,8 @@
 import SwiftUI
 
 struct HomeView: View {
+    @Environment(AuthViewModel.self) private var authViewModel
+    
     var body: some View {
         ZStack {
             LinearGradient(
@@ -21,6 +23,10 @@ struct HomeView: View {
             .ignoresSafeArea()
             
             VStack {
+                HStack{
+                    Text("Hello \(authViewModel.getEmail())").font(.title)
+                }
+                
                 HStack {
                     Text("Relationship Health Check Section")
                 }
