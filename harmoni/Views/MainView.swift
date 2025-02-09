@@ -15,13 +15,20 @@ struct MainView: View {
             Tab("Home", systemImage: "house.fill", value: 0) {
                 HomeView()
             }
+            
+            Tab("Relationship", systemImage: "heart.fill", value: 0) {
+                Label("Lightning", systemImage: "bolt.fill")
+            }
+
+            
             Tab("Finance", systemImage: "dollarsign.ring", value: 0) {
                 Label("Lightning", systemImage: "bolt.fill")
             }
             
-            Tab("Groceries", systemImage: "star", value: 0) {
+            Tab("Upkeep", systemImage: "basket.fill", value: 0) {
                 Label("Lightning", systemImage: "bolt.fill")
             }
-        }.tint(.white)
+            
+        }
     }
 }

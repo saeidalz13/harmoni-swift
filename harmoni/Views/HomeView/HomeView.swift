@@ -11,20 +11,20 @@ struct HomeView: View {
     
     var body: some View {
         ZStack {
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(red: 0.05, green: 0.05, blue: 0.2),  // Dark navy blue
-                    Color(red: 0.5, green: 0.3, blue: 0.1),   // Warm brown
-                    Color(red: 0.72, green: 0.52, blue: 0.04) // Goldenrod
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+//            LinearGradient(
+//                gradient: Gradient(colors: [
+//                    Color(red: 0.05, green: 0.05, blue: 0.2),  // Dark navy blue
+//                    Color(red: 0.5, green: 0.3, blue: 0.1),   // Warm brown
+//                    Color(red: 0.82, green: 0.52, blue: 0.24) // Goldenrod
+//                ]),
+//                startPoint: .top,
+//                endPoint: .bottom
+//            )
+//            .ignoresSafeArea()
             
             VStack {
                 HStack{
-                    Text("Hello \(authViewModel.getEmail())").font(.title)
+                    Text("Hello \(authViewModel.getUserID())").font(.title)
                 }
                 
                 HStack {
