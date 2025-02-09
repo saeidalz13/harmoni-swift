@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 // app entry point
 @main
@@ -13,6 +14,9 @@ struct harmoniApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .modelContainer(for: [
+                    LocalUser.self
+                ])
         }
     }
 }

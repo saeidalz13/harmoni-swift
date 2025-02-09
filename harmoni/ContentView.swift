@@ -7,8 +7,21 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var authViewModel = AuthViewModel()
-    @State private var gqlManager = GraphQLManager()
+    @Environment(\.modelContext) private var context
+
+    var graphQLManager: GraphQLManager
+    var networkManager: NetworkManager
+
+    @State private var authViewModel: AuthViewModel
+
+    init() {
+        networkManager = NetworkManager()
+        graphQLManager = GraphQLManager()
+        authViewModel = AuthViewModel(
+            networkManager: networkManager,
+            graphQLManager: graphQLManager
+        )
+    }
     
     var body: some View {
         ZStack {
@@ -19,9 +32,10 @@ struct ContentView: View {
             ).ignoresSafeArea()
             
             if !authViewModel.getLoggedInStatus() {
-                AuthView(gqlManager: gqlManager).environment(authViewModel)
+                AuthView()
+                    .environment(authViewModel)
             } else {
-                MainView()
+                MainView().environment(authViewModel)
             }
         }
     }
