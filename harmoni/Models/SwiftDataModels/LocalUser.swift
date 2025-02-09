@@ -12,21 +12,22 @@ import SwiftData
 // which SwiftData uses to examine the class and generate an internal schema.
 // Also add conformance to Observable
 @Model
-final class LocalUser {
+final class LocalUser: Identifiable {
     @Attribute(.unique) var id: String
     @Attribute(.unique) var email: String
-    var firstName: String
-    var lastName: String
-    @Attribute(.unique) var partnerID: String?
-    @Attribute(.unique) var familyID: String?
+    var firstName: String?
+    var lastName: String?
+    var partnerID: String?
+    var familyID: String?
     var familyTitle: String?
     
     init(
         id: String,
-        firstName: String,
-        lastName: String,
         email: String,
+        firstName: String? = nil,
+        lastName: String? = nil,
         partnerID: String? = nil,
+        familyID: String? = nil,
         familyTitle: String? = nil
     ) {
         self.id = id
@@ -34,6 +35,7 @@ final class LocalUser {
         self.lastName = lastName
         self.email = email
         self.partnerID = partnerID
+        self.familyID = familyID
         self.familyTitle = familyTitle
     }
 }

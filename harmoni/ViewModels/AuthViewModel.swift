@@ -5,6 +5,7 @@
 //  Created by Saeid Alizadeh on 2025-01-30.
 //
 import SwiftUI
+import SwiftData
 
 @Observable
 class AuthViewModel {
@@ -13,6 +14,7 @@ class AuthViewModel {
     private var email: String = ""
     private var networkManager: NetworkManager
     private var graphQLManager: GraphQLManager
+    private var modelContext: ModelContext? = nil
     
     private var ws: URLSessionWebSocketTask?
     var showAlert = false
@@ -28,6 +30,10 @@ class AuthViewModel {
     /*
      Setters
      */
+    func setModelConext(modelContext: ModelContext) {
+        self.modelContext = modelContext
+    }
+    
     func setAuthorized(userId: String, email: String) {
         isLoggedIn = true
         self.userId = userId
@@ -68,6 +74,23 @@ class AuthViewModel {
                     let oAuthResp = try DataSerializer.decodeJSON(data: data) as OAuth2RestResponse
                     
                     if oAuthResp.isAuth {
+                        let localUser = LocalUser(
+                            id: oAuthResp.userId,
+                            email: oAuthResp.email,
+                            firstName: oAuthResp.firstName,
+                            lastName: oAuthResp.lastName,
+                            partnerID: oAuthResp.partnerId,
+                            familyID: oAuthResp.familyId,
+                            familyTitle: oAuthResp.familyTitle
+                        )
+                        
+                        self.modelContext?.insert(localUser)
+                        do {
+                            try self.modelContext?.save()
+                        } catch {
+                            print("Failed to save user: \(error)")
+                        }
+                        
                         await MainActor.run {
                             showSafariView = false
                             setAuthorized(userId: oAuthResp.userId, email: oAuthResp.email)

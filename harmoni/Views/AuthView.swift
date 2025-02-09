@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SafariServices
+import SwiftData
 
 struct AuthView: View {
     @Environment(AuthViewModel.self) private var authViewModel
