@@ -11,6 +11,7 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     
     @Query private var users: [LocalUser]
+    var test = true
     
     var graphQLManager: GraphQLManager
     var networkManager: NetworkManager
@@ -28,14 +29,7 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            LinearGradient(
-                gradient: Gradient(colors: [.white, .brown]),
-                startPoint: .bottom,
-                endPoint: .top
-            ).ignoresSafeArea()
-            
-            // No user data in persisted store
-            if users.isEmpty {
+            if users.isEmpty && !test {
                 AuthView()
                     .environment(authViewModel)
             } else {
@@ -46,6 +40,11 @@ struct ContentView: View {
             authViewModel.setModelConext(modelContext: modelContext)
         }
     }
+    
+//    #if DEBUG
+//    #else
+//    #endif
+    
 }
 
 #Preview {
