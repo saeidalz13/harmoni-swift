@@ -15,14 +15,30 @@ enum DataSerializer {
         return data
     }
     
-    static func encodeJSON() {
+    static func dataToText(data: Data) throws -> String {
+        guard let text = String(data: data, encoding: .utf8) else {
+            throw DataSerializationError.dataToTextDecoding
+        }
+        
+        return text
+    }
+    
+    static func encodeJSON<T: Encodable>(value: T) throws -> Data {
+        do {
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.prettyPrinted]
+            
+            return try encoder.encode(value)
+            
+        } catch {
+            throw DataSerializationError.jsonEncoding(error: error)
+        }
         
     }
     
     static func decodeJSON<T: Decodable>(data: Data) throws -> T {
         do {
             let decoder = JSONDecoder()
-            decoder.keyDecodingStrategy = .convertFromSnakeCase
             
             return try decoder.decode(T.self, from: data)
             

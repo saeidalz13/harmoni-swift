@@ -10,7 +10,7 @@ import Foundation
 enum DataSerializationError: Error, LocalizedError {
     case textToDataEncoding
     case dataToTextDecoding
-    case jsonEncoding
+    case jsonEncoding(error: Error)
     case jsonDecoding(data: Data, error: Error)
     case unknown(Error)
 
@@ -20,12 +20,20 @@ enum DataSerializationError: Error, LocalizedError {
             return "Failed to convert text to data."
         case .dataToTextDecoding:
             return "Failed to convert data to text."
-        case .jsonEncoding:
-            return "Failed to encode object to JSON."
+        case .jsonEncoding(let error):
+            return "Failed to encode object to JSON: \(error.localizedDescription)"
         case .jsonDecoding(let data, let error):
             return "Failed to decode JSON to object: \(data) \(error.localizedDescription)"
         case .unknown(let error):
             return error.localizedDescription
         }
+    }
+}
+
+enum ModelContextError: Error, LocalizedError {
+    case nilContext
+    
+    var localizedDescription: String? {
+        return "Model context is nil."
     }
 }

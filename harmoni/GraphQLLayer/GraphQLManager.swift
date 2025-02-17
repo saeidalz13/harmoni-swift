@@ -6,17 +6,18 @@
 //
 import Foundation
 
-final class GraphQLManager {
-    func queryWithoutInputsHTTPBody(queryName: String) throws -> Data {
-        let query = """
-        {
-            "query": "query { \(queryName) }"
+struct GraphQLRequest<T: Codable>: Codable {
+    let query: String
+    var variables: T?
+}
+
+final class GraphQLManager: Sendable {
+    func generateHTTPBody<T: Codable>(query: String, variables: T?) throws -> Data {
+        var graphQLRequest = GraphQLRequest(query: query, variables: ["input": variables])
+        if variables == nil {
+            graphQLRequest.variables = nil
         }
-        """
-        guard let httpBody = query.data(using: .utf8) else {
-            throw DataSerializationError.textToDataEncoding
-        }
-        
-        return httpBody
+      
+        return try DataSerializer.encodeJSON(value: graphQLRequest)
     }
 }

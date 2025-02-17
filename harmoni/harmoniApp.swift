@@ -7,16 +7,86 @@
 
 import SwiftUI
 import SwiftData
+import GoogleSignIn
 
-// app entry point
 @main
 struct harmoniApp: App {
+    @State var authViewModel: AuthViewModel
+    @State var localUser: LocalUser?
+    
+    var container: ModelContainer
+
+    init() {
+        do {
+            let storeURL = URL.documentsDirectory.appending(path: "database.sqlite")
+            let schema = Schema(
+                [
+                    LocalUser.self
+                ]
+            )
+            let configurations = ModelConfiguration(url: storeURL)
+            container = try ModelContainer(for: schema, configurations: configurations)
+        } catch {
+            fatalError("Failed to configure SwiftData container.")
+        }
+        
+        self._authViewModel = State(initialValue: .init(
+                networkManager: NetworkManager(),
+                graphQLManager: GraphQLManager(),
+                modelContext: container.mainContext)
+        )
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .modelContainer(for: [
-                    LocalUser.self
-                ])
+                .environment(authViewModel)
+                .modelContainer(container)
+                .onOpenURL { url in
+                    GIDSignIn.sharedInstance.handle(url)
+                }
+                .onAppear {
+                    GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
+                        if let error {
+                            print("Could not restore google user sign in: \(error.localizedDescription)")
+                            return
+                        }
+                        
+                        let accessToken = SecurityManager.retrieveFromKeychain(key: KeychainTokenKey.accessToken.rawValue)
+                        if accessToken == nil {
+                            print("no access token in keychain")
+                            GIDSignIn.sharedInstance.signOut()
+                            return
+                        }
+                        
+                        let refreshToken = SecurityManager.retrieveFromKeychain(key: KeychainTokenKey.refreshToken.rawValue)
+                        if refreshToken == nil {
+                            print("no refresh token in keychain")
+                            GIDSignIn.sharedInstance.signOut()
+                            return
+                        }
+                        
+                        
+                        guard let user = user else { return }
+                        guard let profile = user.profile else { return }
+                        let email = profile.email
+                        
+                        let fd = FetchDescriptor<LocalUser>(
+                            predicate: #Predicate { $0.email == email }
+                        )
+                        
+                        do {
+                            if let localUser = try container.mainContext.fetch(fd).first {
+                                self.authViewModel.localUser = localUser
+                            }
+                            
+                        } catch {
+                            print("error in finding user from db: \(error)")
+                            GIDSignIn.sharedInstance.signOut()
+                        }
+
+                    }
+                }
         }
     }
 }

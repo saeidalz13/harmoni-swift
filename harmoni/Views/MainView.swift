@@ -9,23 +9,26 @@ import SwiftUI
 
 
 enum TabSelection: Int8 {
-    case Home
-    case Relationship
-    case Finance
-    case Upkeep
+    case home
+    case relationship
+    case finance
+    case upkeep
+    case settings
 }
 
 
 struct MainView: View {
-    @State private var selection: Int8 = TabSelection.Home.rawValue
+    @State private var selection: Int8 = TabSelection.home.rawValue
+    @State private var isChatActive = false
     
     init() {
-        UITabBar.appearance().barTintColor = UIColor.clear
-        
-        let scrollEdgeAppearance = UITabBarAppearance()
-        scrollEdgeAppearance.configureWithTransparentBackground()
-        UITabBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance
-        UITabBar.appearance().standardAppearance = scrollEdgeAppearance
+        //        UITabBar.appearance().barTintColor = UIColor.clear
+        //        let scrollEdgeAppearance = UITabBarAppearance()
+        //        scrollEdgeAppearance.configureWithTransparentBackground()
+        //        UITabBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance
+        //        UITabBar.appearance().standardAppearance = scrollEdgeAppearance
+        //
+        UITabBar.appearance().unselectedItemTintColor = UIColor.black
     }
     
     var body: some View {
@@ -36,58 +39,82 @@ struct MainView: View {
                         .tabItem {
                             Label("Home", systemImage: "house.fill")
                         }
-                        .tag(TabSelection.Home.rawValue)
-                        .background(backgroundView())
+                        .tag(TabSelection.home.rawValue)
                     
                     Label("Lightning", systemImage: "bolt.fill")
                         .tabItem {
                             Label("Relationship", systemImage: "heart.fill")
+                            
                         }
-                        .tag(TabSelection.Relationship.rawValue)
-                        .background(backgroundView())
+                        .tag(TabSelection.relationship.rawValue)
                     
                     Label("Lightning", systemImage: "bolt.fill")
                         .tabItem {
                             Label("Finance", systemImage: "dollarsign.ring")
                         }
-                        .tag(TabSelection.Finance.rawValue)
+                        .tag(TabSelection.finance.rawValue)
                     
                     Label("Lightning", systemImage: "bolt.fill")
                         .tabItem {
                             Label("Upkeep", systemImage: "basket.fill")
                         }
-                        .tag(TabSelection.Upkeep.rawValue)
+                        .tag(TabSelection.upkeep.rawValue)
                     
-                    Label("Lightning", systemImage: "bolt.fill")
+                    SettingsView()
                         .tabItem {
                             Label("Settings", systemImage: "slider.horizontal.2.square")
                         }
-                        .tag(TabSelection.Upkeep.rawValue)
+                        .tag(TabSelection.settings.rawValue)
                 }
+                .background(backgroundView())
                 .ignoresSafeArea()
-            }.tint(.yellow)
+                
+            }.tint(Color.maroon)
             
-//            Circle().fill(.green).frame(width: 100)
+            VStack {
+                HStack {
+                    Button(action: {
+                        isChatActive.toggle()
+                    }) {
+                        Image(systemName: "message.fill")
+                            .foregroundStyle(Color.maroon)
+                            .font(.title)
+                    }
+                    .sheet(isPresented: $isChatActive) {
+                        ChatMenuView()
+                    }
+                    
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                .padding(.trailing, 25)
+                .padding(.bottom, 5)
+                
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+            .padding(.bottom, 65)
+            .background(.clear)
         }
     }
     
     /// Chooses different colors for different tabs
     private func backgroundView() -> some View {
         let gradientColors: [Color]
-        
+        //
         switch selection {
-        case TabSelection.Home.rawValue:
-            gradientColors = [Color.pink.opacity(0.7), Color("maroon").opacity(0.9)]
-        case TabSelection.Relationship.rawValue:
+        case TabSelection.home.rawValue:
+            gradientColors = [Color.pink.opacity(0.7), Color.maroon.opacity(0.2)]
+        case TabSelection.relationship.rawValue:
             gradientColors = [Color.pink.opacity(0.9), Color.purple.opacity(0.7)]
-        case TabSelection.Finance.rawValue:
+        case TabSelection.finance.rawValue:
             gradientColors = [Color.orange.opacity(0.8), Color.yellow.opacity(0.6)]
-        case TabSelection.Upkeep.rawValue:
+        case TabSelection.upkeep.rawValue:
+            gradientColors = [Color.blue.opacity(0.8), Color.teal.opacity(0.6)]
+        case TabSelection.settings.rawValue:
             gradientColors = [Color.blue.opacity(0.8), Color.teal.opacity(0.6)]
         default:
             gradientColors = [Color.white, Color.gray]
         }
-        
+
         return LinearGradient(gradient: Gradient(colors: gradientColors), startPoint: .top, endPoint: .bottom)
             .overlay(heartOverlay())
     }
@@ -107,32 +134,3 @@ struct MainView: View {
         }
     }
 }
-
-//struct ChatMenuView: View {
-//    var body: some View {
-//        Text("Chat Menu")
-//            .navigationTitle("Chat")
-//    }
-//}
- 
-// .toolbar {
-// ToolbarItem(placement: .bottomBar) {
-// NavigationLink(destination: ChatMenuView()) {
-// Image(systemName: "message.fill")
-// .foregroundColor(.gray)
-// }.padding(.top, 10)
-// }
-// ToolbarItem(placement: .bottomBar) {
-// NavigationLink(destination: ChatMenuView()) {
-// Image(systemName: "camera.badge.ellipsis")
-// .foregroundColor(.gray)
-// }.padding(.top, 10)
-// }
-// ToolbarItem(placement: .bottomBar) {
-// NavigationLink(destination: ChatMenuView()) {
-// Image(systemName: "phone.badge.waveform")
-// .foregroundColor(.gray)
-// }.padding(.top, 10)
-// }
-// }
- 

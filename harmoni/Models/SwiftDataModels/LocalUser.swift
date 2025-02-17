@@ -17,25 +17,34 @@ final class LocalUser: Identifiable {
     @Attribute(.unique) var email: String
     var firstName: String?
     var lastName: String?
-    var partnerID: String?
-    var familyID: String?
+    var familyId: String?
     var familyTitle: String?
+    var partnerId: String?
+    var partnerEmail: String?
+    var partnerFirstName: String?
+    var partnerLastName: String?
     
     init(
         id: String,
         email: String,
         firstName: String? = nil,
         lastName: String? = nil,
-        partnerID: String? = nil,
-        familyID: String? = nil,
-        familyTitle: String? = nil
+        familyId: String? = nil,
+        familyTitle: String? = nil,
+        partnerId: String? = nil,
+        partnerEmail: String? = nil,
+        partnerFirstName: String? = nil,
+        partnerLastName: String? = nil
     ) {
         self.id = id
         self.firstName = firstName
         self.lastName = lastName
         self.email = email
-        self.partnerID = partnerID
-        self.familyID = familyID
+        self.familyId = familyId
         self.familyTitle = familyTitle
+        self.partnerId = partnerId
+        self.partnerEmail = partnerEmail
+        self.partnerFirstName = partnerFirstName
+        self.partnerLastName = partnerLastName
     }
 }

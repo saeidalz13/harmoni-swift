@@ -5,48 +5,20 @@
 //  Created by Saeid Alizadeh on 2025-01-25.
 //
 import SwiftUI
-import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    
-    @Query private var users: [LocalUser]
-    var test = true
-    
-    var graphQLManager: GraphQLManager
-    var networkManager: NetworkManager
-    
-    @State private var authViewModel: AuthViewModel
-    
-    init() {
-        networkManager = NetworkManager()
-        graphQLManager = GraphQLManager()
-        authViewModel = AuthViewModel(
-            networkManager: networkManager,
-            graphQLManager: graphQLManager
-        )
-    }
+    @Environment(AuthViewModel.self) private var authViewModel
     
     var body: some View {
         ZStack {
-            if users.isEmpty && !test {
-                AuthView()
+            if authViewModel.localUser != nil {
+                MainView()
                     .environment(authViewModel)
             } else {
-                MainView().environment(authViewModel)
+                AuthView()
+                    .environment(authViewModel)
             }
         }
-        .onAppear {
-            authViewModel.setModelConext(modelContext: modelContext)
-        }
     }
-    
-//    #if DEBUG
-//    #else
-//    #endif
-    
 }
 
-#Preview {
-    ContentView()
-}

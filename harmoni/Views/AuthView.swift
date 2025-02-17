@@ -6,44 +6,67 @@
 //
 
 import SwiftUI
-import SafariServices
 import SwiftData
+import GoogleSignIn
+
 
 struct AuthView: View {
     @Environment(AuthViewModel.self) private var authViewModel
+    @State private var showAlert: Bool = false
     
     var body: some View {
-        @Bindable var authViewModel = authViewModel
+        VStack {
+            Button("Google Sign In", systemImage: "envelope.open.fill") {
+                handleSignInButton()
+            }
+            .cornerRadius(10)
+            .padding()
+            .background(.black)
+            .foregroundStyle(.white)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.maroon)
         
-        HarmoniButton(title: "Google Sign In", action: authViewModel.signInOAuth2Google)
-            .sheet(
-                isPresented: $authViewModel.showSafariView,
-                onDismiss: {
-                    if let ws = authViewModel.getWsObject() {
-                        ws.cancel()
-                        print("ws conn closed")
-                    }
-                }) {
-                    if let url = authViewModel.redirectURL {
-                        SafariViewController(url: url)
-                    }
-                }
-                .alert("Error", isPresented: $authViewModel.showAlert) {
-                    Button("OK", role: .cancel) {}
-                } message: {
-                    Text(authViewModel.alertMessage)
-                }
+        .alert("Error", isPresented: $showAlert) {
+            Button("Dimiss", role: .cancel) {}
+        } message: {
+            Text("Failed to Sign In!")
+        }
     }
+    
+    func handleSignInButton() {
+        guard let presentingViewController = (
+            UIApplication.shared.connectedScenes.first
+            as? UIWindowScene
+        )?.windows.first?.rootViewController
+        else {return}
+        
+        GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) { signInResult, error in
+            guard let result = signInResult else {
+                print(error?.localizedDescription ?? "Failed to sign in with Google")
+                return
+            }
+            
+            guard let idToken = result.user.idToken else {
+                print("No id token was found in Google payload")
+                return
+            }
+            
+            Task {
+                do {
+                    self.authViewModel.localUser = try await authViewModel.authenticateBackend(
+                        idToken: idToken.tokenString
+                    )
+                    
+                } catch {
+                    GIDSignIn.sharedInstance.signOut()
+                    self.authViewModel.localUser = nil
+                    print("Authorization failed: \(error.localizedDescription)")
+                }
+            }
+
+        }
+    }
+
 }
 
-// Helper View to wrap SFSafariViewController for SwiftUI
-struct SafariViewController: UIViewControllerRepresentable {
-    let url: URL
-    
-    func makeUIViewController(context: UIViewControllerRepresentableContext<SafariViewController>) -> SFSafariViewController {
-        return SFSafariViewController(url: url)
-    }
-    
-    func updateUIViewController(_ uiViewController: SFSafariViewController, context: UIViewControllerRepresentableContext<SafariViewController>) {
-    }
-}

@@ -7,18 +7,11 @@
 
 import Foundation
 
-final class NetworkManager {
-    func createPostRequest(httpBody: Data? = nil) -> URLRequest {
-        var request = URLRequest(url: ServerEndpoint.graphQL.url)
-        request.httpMethod = HTTPMethod.POST.rawValue
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        request.httpBody = httpBody
-        return request
-    }
-    
-    func makeHTTPRequest(request: URLRequest) async throws -> Data {
+final class NetworkManager: Sendable {
+
+    func makeHTTPPostRequest(httpBody: Data? = nil, bearerToken: String? = nil) async throws -> Data {
         do {
+            let request = createPostRequest(httpBody: httpBody, bearederToken: bearerToken)
             let (data, response) = try await URLSession.shared.data(for: request)
             
             if let httpResponse = response as? HTTPURLResponse {
@@ -26,10 +19,11 @@ final class NetworkManager {
                 case 200...299:
                     break
                 default:
+                    print(httpResponse)
                     throw NetworkError.serverError(code: httpResponse.statusCode)
                 }
             }
-            
+
             return data
             
         } catch let error as NSError {
@@ -69,5 +63,18 @@ final class NetworkManager {
     
     func closeWebSocketConn(ws: URLSessionWebSocketTask) {
         ws.cancel(with: URLSessionWebSocketTask.CloseCode.normalClosure, reason: nil)
+    }
+    
+    private func createPostRequest(httpBody: Data? = nil, bearederToken: String? = nil) -> URLRequest {
+        var request = URLRequest(url: ServerEndpoint.graphQL.url)
+        request.httpMethod = HTTPMethod.POST.rawValue
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        if let brearederToken = bearederToken {
+            request.setValue("Bearer \(brearederToken)", forHTTPHeaderField: "Authorization")
+        }
+        
+        request.httpBody = httpBody
+        return request
     }
 }

@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		36A5A5D22D5B710D00E1CE8D /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 36A5A5D12D5B710D00E1CE8D /* GoogleSignIn */; };
+		36A5A5D42D5B710D00E1CE8D /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 36A5A5D32D5B710D00E1CE8D /* GoogleSignInSwift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		362360C42D45082F008428AE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,9 +34,24 @@
 		362360CD2D45082F008428AE /* harmoniUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = harmoniUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		362361512D59B5E5008428AE /* Exceptions for "harmoni" folder in "harmoni" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Assets.xcassets,
+				Info.plist,
+				"Preview Content/Preview Assets.xcassets",
+			);
+			target = 362360B22D45082D008428AE /* harmoni */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		362360B52D45082D008428AE /* harmoni */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				362361512D59B5E5008428AE /* Exceptions for "harmoni" folder in "harmoni" target */,
+			);
 			path = harmoni;
 			sourceTree = "<group>";
 		};
@@ -52,6 +72,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				36A5A5D22D5B710D00E1CE8D /* GoogleSignIn in Frameworks */,
+				36A5A5D42D5B710D00E1CE8D /* GoogleSignInSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +134,8 @@
 			);
 			name = harmoni;
 			packageProductDependencies = (
+				36A5A5D12D5B710D00E1CE8D /* GoogleSignIn */,
+				36A5A5D32D5B710D00E1CE8D /* GoogleSignInSwift */,
 			);
 			productName = harmoni;
 			productReference = 362360B32D45082D008428AE /* harmoni.app */;
@@ -196,6 +220,7 @@
 			mainGroup = 362360AA2D45082D008428AE;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				36A5A5D02D5B70F800E1CE8D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 362360B42D45082D008428AE /* Products */;
@@ -415,7 +440,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.saeid.harmoni;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -445,7 +470,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.saeid.harmoni;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -562,6 +587,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		36A5A5D02D5B70F800E1CE8D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		36A5A5D12D5B710D00E1CE8D /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 36A5A5D02D5B70F800E1CE8D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		36A5A5D32D5B710D00E1CE8D /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 36A5A5D02D5B70F800E1CE8D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 362360AB2D45082D008428AE /* Project object */;
 }

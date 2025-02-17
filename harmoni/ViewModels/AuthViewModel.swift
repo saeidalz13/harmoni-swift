@@ -7,126 +7,85 @@
 import SwiftUI
 import SwiftData
 
-@Observable
-class AuthViewModel {
-    private var isLoggedIn: Bool = false
-    private var userId: String = ""
-    private var email: String = ""
+
+@Observable @MainActor
+final class AuthViewModel {
     private var networkManager: NetworkManager
     private var graphQLManager: GraphQLManager
-    private var modelContext: ModelContext? = nil
-    
-    private var ws: URLSessionWebSocketTask?
-    var showAlert = false
-    var redirectURL: URL?
-    var alertMessage = ""
-    var showSafariView = false
-    
-    init(networkManager: NetworkManager, graphQLManager: GraphQLManager) {
+    private var modelContext: ModelContext
+    private var _localUser: LocalUser?
+
+    var localUser: LocalUser? {
+        get { return _localUser }
+        set { _localUser = newValue }
+    }
+
+
+    init(networkManager: NetworkManager, graphQLManager: GraphQLManager, modelContext: ModelContext) {
         self.networkManager = networkManager
         self.graphQLManager = graphQLManager
-    }
-    
-    /*
-     Setters
-     */
-    func setModelConext(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
     
-    func setAuthorized(userId: String, email: String) {
-        isLoggedIn = true
-        self.userId = userId
-        self.email = email
-    }
-    
-    /*
-     Getters
-     */
-    func getLoggedInStatus() -> Bool {
-        return isLoggedIn
-    }
-    
-    func getEmail() -> String {
-        return email
-    }
-    
-    func getWsObject() -> URLSessionWebSocketTask? {
-        return ws
-    }
-    
-    func signInOAuth2Google() {
-        Task {
-            do {
-                let oauth2RedirectLink = try await queryGoogleOAuth2RedirectLink()
-                
-                if let url = URL(string: oauth2RedirectLink) {
-                    await MainActor.run {
-                        redirectURL = url
-                        showSafariView = true
-                    }
-                }
-                
-                let ws = networkManager.newWebSocketTask()
-                
-                while showSafariView {
-                    let data = try await networkManager.getWebSocketMessage(ws: ws)
-                    let oAuthResp = try DataSerializer.decodeJSON(data: data) as OAuth2RestResponse
-                    
-                    if oAuthResp.isAuth {
-                        let localUser = LocalUser(
-                            id: oAuthResp.userId,
-                            email: oAuthResp.email,
-                            firstName: oAuthResp.firstName,
-                            lastName: oAuthResp.lastName,
-                            partnerID: oAuthResp.partnerId,
-                            familyID: oAuthResp.familyId,
-                            familyTitle: oAuthResp.familyTitle
-                        )
-                        
-                        self.modelContext?.insert(localUser)
-                        do {
-                            try self.modelContext?.save()
-                        } catch {
-                            print("Failed to save user: \(error)")
-                        }
-                        
-                        await MainActor.run {
-                            showSafariView = false
-                            setAuthorized(userId: oAuthResp.userId, email: oAuthResp.email)
-                        }
-                    }
-                }
-                
-                networkManager.closeWebSocketConn(ws: ws)
+    func authenticateBackend(idToken: String) async throws -> LocalUser {
+        do {            
+            let httpBody = try graphQLManager.generateHTTPBody(
+                query: GraphQLQuery.authenticateIdToken.generate(type: .mutation),
+                variables: AuthenticateIdTokenInput.init(idToken: idToken)
+            )
+
+            let respData = try await networkManager.makeHTTPPostRequest(httpBody: httpBody)
+            let userResp = try DataSerializer.decodeJSON(data: respData) as GraphQLRespPayload<AuthenticateIdTokenResponse>
+
+            let authPayload = userResp.data.authenticateIdToken            
+            let localUser = LocalUser.init(
+                id: authPayload.user.id,
+                email: authPayload.user.email,
+                firstName: authPayload.user.firstName,
+                lastName: authPayload.user.lastName,
+                familyId: authPayload.user.familyId,
+                familyTitle: authPayload.user.familyTitle,
+                partnerId: authPayload.user.partnerId,
+                partnerEmail: authPayload.user.partnerEmail,
+                partnerFirstName: authPayload.user.partnerFirstName,
+                partnerLastName: authPayload.user.partnerLastName
+            )
+        
+            try SecurityManager.saveToKeychain(token: authPayload.accessToken, key: KeychainTokenKey.accessToken.rawValue)
+            try SecurityManager.saveToKeychain(token: authPayload.refreshToken, key: KeychainTokenKey.refreshToken.rawValue)
             
-            } catch {
-                if let ws = ws {
-                    networkManager.closeWebSocketConn(ws: ws)
-                }
-                alertMessage = "Sorry! Unable to sign in at this time"
-                showAlert = true
-                
-                print("Failed Sign In Google: \(error)")
-                
-                await MainActor.run {
-                    showSafariView = false
-                }
-            }
+            modelContext.insert(localUser)
+            try modelContext.save()
+ 
+            return localUser
+
+        } catch {
+            print("Failed to setAuthorize")
+            throw error
         }
     }
     
-    /*
-     Private Functions
-     */
-    private func queryGoogleOAuth2RedirectLink() async throws -> String {
-        let httpBody = try graphQLManager.queryWithoutInputsHTTPBody(
-            queryName: "oauth2RedirectLink"
-        )
-        let request = networkManager.createPostRequest(httpBody: httpBody)
-        let responseData = try await networkManager.makeHTTPRequest(request: request)
-        let encodedResponseData = try JSONDecoder().decode(GraphQLData<OAuth2RedirectLinkResponse>.self, from: responseData)
+    func updateUser(email: String, firstName: String, lastName: String) async throws {
+        let accessToken = SecurityManager.retrieveFromKeychain(key: KeychainTokenKey.accessToken.rawValue)
+        guard let accessToken = accessToken else { throw SecurityError.unavailableToken }
         
-        return encodedResponseData.data.oauth2RedirectLink
+        let httpBody = try graphQLManager.generateHTTPBody(
+            query: GraphQLQuery.updateUser.generate(type: .mutation),
+            variables: UpdateUserInput.init(
+                email: email,
+                firstName: firstName,
+                lastName: lastName
+            )
+        )
+        
+        _ = try await networkManager.makeHTTPPostRequest(httpBody: httpBody, bearerToken: accessToken)
+        
+        self.localUser!.email = email
+        self.localUser!.firstName = firstName
+        self.localUser!.lastName = lastName
+        
+        try modelContext.save()
     }
+
 }
+
