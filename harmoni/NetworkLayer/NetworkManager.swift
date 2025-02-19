@@ -9,11 +9,20 @@ import Foundation
 
 final class NetworkManager: Sendable {
 
-    func makeHTTPPostRequest(httpBody: Data? = nil, bearerToken: String? = nil) async throws -> Data {
+    func makeHTTPPostRequest(httpBody: Data? = nil, withBearer: Bool) async throws -> Data {
         do {
-            let request = createPostRequest(httpBody: httpBody, bearederToken: bearerToken)
-            let (data, response) = try await URLSession.shared.data(for: request)
+            var accessToken: String?
+            if withBearer {
+                if let token = SecurityManager.retrieveFromKeychain(key: KeychainTokenKey.accessToken.rawValue) {
+                    accessToken = token
+                } else {
+                    throw SecurityError.unavailableToken
+                }
+            }
             
+            let request = createPostRequest(httpBody: httpBody, bearerToken: accessToken)
+                
+            let (data, response) = try await URLSession.shared.data(for: request)
             if let httpResponse = response as? HTTPURLResponse {
                 switch httpResponse.statusCode {
                 case 200...299:
@@ -23,7 +32,7 @@ final class NetworkManager: Sendable {
                     throw NetworkError.serverError(code: httpResponse.statusCode)
                 }
             }
-
+        
             return data
             
         } catch let error as NSError {
@@ -33,6 +42,20 @@ final class NetworkManager: Sendable {
             throw NetworkError.unknown(error)
         }
     }
+    
+    private func createPostRequest(httpBody: Data? = nil, bearerToken: String? = nil) -> URLRequest {
+        var request = URLRequest(url: ServerEndpoint.graphQL.url)
+        request.httpMethod = HTTPMethod.POST.rawValue
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        if let bearerToken {
+            request.setValue("Bearer \(bearerToken)", forHTTPHeaderField: "Authorization")
+        }
+        
+        request.httpBody = httpBody
+        return request
+    }
+    
     
     func getWebSocketMessage(ws: URLSessionWebSocketTask) async throws -> Data {
         do {
@@ -64,17 +87,5 @@ final class NetworkManager: Sendable {
     func closeWebSocketConn(ws: URLSessionWebSocketTask) {
         ws.cancel(with: URLSessionWebSocketTask.CloseCode.normalClosure, reason: nil)
     }
-    
-    private func createPostRequest(httpBody: Data? = nil, bearederToken: String? = nil) -> URLRequest {
-        var request = URLRequest(url: ServerEndpoint.graphQL.url)
-        request.httpMethod = HTTPMethod.POST.rawValue
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        if let brearederToken = bearederToken {
-            request.setValue("Bearer \(brearederToken)", forHTTPHeaderField: "Authorization")
-        }
-        
-        request.httpBody = httpBody
-        return request
-    }
+
 }

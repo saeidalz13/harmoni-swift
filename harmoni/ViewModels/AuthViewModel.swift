@@ -6,7 +6,7 @@
 //
 import SwiftUI
 import SwiftData
-
+import GoogleSignIn
 
 @Observable @MainActor
 final class AuthViewModel {
@@ -34,7 +34,7 @@ final class AuthViewModel {
                 variables: AuthenticateIdTokenInput.init(idToken: idToken)
             )
 
-            let respData = try await networkManager.makeHTTPPostRequest(httpBody: httpBody)
+            let respData = try await networkManager.makeHTTPPostRequest(httpBody: httpBody, withBearer: false)
             let userResp = try DataSerializer.decodeJSON(data: respData) as GraphQLRespPayload<AuthenticateIdTokenResponse>
 
             let authPayload = userResp.data.authenticateIdToken            
@@ -66,9 +66,6 @@ final class AuthViewModel {
     }
     
     func updateUser(email: String, firstName: String, lastName: String) async throws {
-        let accessToken = SecurityManager.retrieveFromKeychain(key: KeychainTokenKey.accessToken.rawValue)
-        guard let accessToken = accessToken else { throw SecurityError.unavailableToken }
-        
         let httpBody = try graphQLManager.generateHTTPBody(
             query: GraphQLQuery.updateUser.generate(type: .mutation),
             variables: UpdateUserInput.init(
@@ -78,13 +75,34 @@ final class AuthViewModel {
             )
         )
         
-        _ = try await networkManager.makeHTTPPostRequest(httpBody: httpBody, bearerToken: accessToken)
+        _ = try await networkManager.makeHTTPPostRequest(httpBody: httpBody, withBearer: true)
         
         self.localUser!.email = email
         self.localUser!.firstName = firstName
         self.localUser!.lastName = lastName
         
         try modelContext.save()
+    }
+    
+    func updateFamilyTitle(familyTitle: String) async throws {
+        
+    }
+    
+    func logOutBackend() async throws {
+        let httpBody = try graphQLManager.generateHTTPBody(
+            query: GraphQLQuery.logOut.generate(type: .mutation),
+            variables: LogOutInput.init(id: localUser!.id)
+        )
+        
+        do {
+            _ = try await networkManager.makeHTTPPostRequest(httpBody: httpBody, withBearer: true)
+        } catch {
+            print("Failed to delete refresh token from backend: \(error)")
+        }
+     
+        GIDSignIn.sharedInstance.signOut()
+        SecurityManager.removeTokensFromKeychain()
+        localUser = nil
     }
 
 }

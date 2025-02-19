@@ -34,6 +34,10 @@ struct UpdateUserInput: Codable {
     let lastName: String
 }
 
+struct LogOutInput: Codable {
+    let id: String
+}
+
 struct AuthenticateIdTokenResponse: Codable {
     let authenticateIdToken: AuthPayload
 }

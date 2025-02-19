@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct CandleView: View {
-    var text: String 
+    var text: String
+    @State private var isEditing: Bool = false
     @State private var verticalFlameOffset: CGFloat = 40
     @State private var horizontalFlameOffset: CGFloat = 20
     
@@ -35,6 +36,9 @@ struct CandleView: View {
                 .onAppear {
                     startFlameAnimation()
                 }
+        }
+        .sheet(isPresented: $isEditing) {
+            
         }
     }
     

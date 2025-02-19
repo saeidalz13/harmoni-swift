@@ -102,7 +102,7 @@ struct MainView: View {
         //
         switch selection {
         case TabSelection.home.rawValue:
-            gradientColors = [Color.pink.opacity(0.7), Color.maroon.opacity(0.2)]
+            gradientColors = [Color.pink.opacity(0.9), Color.maroon.opacity(0.2)]
         case TabSelection.relationship.rawValue:
             gradientColors = [Color.pink.opacity(0.9), Color.purple.opacity(0.7)]
         case TabSelection.finance.rawValue:

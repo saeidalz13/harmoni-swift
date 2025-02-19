@@ -58,22 +58,10 @@ struct UpdateUserView: View {
             } message: {
                 Text(alertMessage)
             }
-
+            
             // Loading Overlay
             if isLoading {
-                VStack {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                        .scaleEffect(1.5)
-                        .padding()
-                    Text("Updating...")
-                        .foregroundColor(.gray)
-                        .font(.headline)
-                }
-                .frame(width: 150, height: 150)
-                .background(Color.white)
-                .cornerRadius(10)
-                .shadow(radius: 10)
+                AppProgressView(text: "Updating")
             }
         }
     }
@@ -83,9 +71,9 @@ struct UpdateUserView: View {
         isLoading = true
         do {
             try await authViewModel.updateUser(
-                email: editedEmail,
-                firstName: editedFirstName,
-                lastName: editedLastName
+                email: editedEmail.lowercased(),
+                firstName: editedFirstName.lowercased(),
+                lastName: editedLastName.lowercased()
             )
             alertTitle = "Success"
             alertMessage = "Personal info updated successfully!"

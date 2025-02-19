@@ -27,9 +27,7 @@ struct HomeView: View {
                     .padding(.top, 15)
                     
                     userProfileView(user: lu, isPartner: true)
-
-                } else {
-                    fatalError("user has reached home view but local user is nil")
+                    
                 }
             }
             .padding()

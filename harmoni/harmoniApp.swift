@@ -78,6 +78,13 @@ struct harmoniApp: App {
                         do {
                             if let localUser = try container.mainContext.fetch(fd).first {
                                 self.authViewModel.localUser = localUser
+                            } else {
+                                
+//                                guard let idToken = user.idToken else {
+//                                    print("No id token was found in Google payload")
+//                                    return
+//                                }
+//                                try await authViewModel.authenticateBackend(idToken: idToken.tokenString)
                             }
                             
                         } catch {

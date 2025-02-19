@@ -13,6 +13,7 @@ enum GraphQLRequestType: String {
 enum GraphQLQuery {
     case updateUser
     case authenticateIdToken
+    case logOut
     
     func generate(type: GraphQLRequestType) -> String {
         var inputs: (String, String)
@@ -37,6 +38,10 @@ enum GraphQLQuery {
             
         case .updateUser:
             inputs = ("updateUser", "UpdateUser")
+            returnField = "id"
+            
+        case .logOut:
+            inputs = ("logOut", "LogOut")
             returnField = "id"
         }
         
