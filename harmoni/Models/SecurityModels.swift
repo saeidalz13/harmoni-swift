@@ -8,6 +8,10 @@
 enum KeychainTokenKey: String {
     case accessToken = "accessToken"
     case refreshToken = "refreshToken"
+    
+    static func getKeys() -> [String] {
+        return [KeychainTokenKey.accessToken.rawValue, KeychainTokenKey.refreshToken.rawValue]
+    }
 }
 
 enum SecurityError: Error {

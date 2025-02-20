@@ -47,4 +47,27 @@ final class LocalUser: Identifiable {
         self.partnerFirstName = partnerFirstName
         self.partnerLastName = partnerLastName
     }
+    
+    /// Fetch and update the user in SwiftData
+    static func updatePersonalInfo(
+        id: String,
+        email: String,
+        firstName: String,
+        lastName: String,
+        modelContext: ModelContext
+    ) throws {
+        let fetchDescriptor = FetchDescriptor<LocalUser>(
+            predicate: #Predicate { $0.id == id }
+        )
+
+        guard let existingUser = try modelContext.fetch(fetchDescriptor).first else {
+            throw NSError(domain: "UpdateUserError", code: 404, userInfo: [NSLocalizedDescriptionKey: "User not found"])
+        }
+
+        existingUser.email = email
+        existingUser.firstName = firstName
+        existingUser.lastName = lastName
+
+        try modelContext.save()
+    }
 }

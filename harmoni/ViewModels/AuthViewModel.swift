@@ -27,7 +27,7 @@ final class AuthViewModel {
         self.modelContext = modelContext
     }
     
-    func authenticateBackend(idToken: String) async throws -> LocalUser {
+    func authenticateBackend(idToken: String) async {
         do {            
             let httpBody = try graphQLManager.generateHTTPBody(
                 query: GraphQLQuery.authenticateIdToken.generate(type: .mutation),
@@ -51,17 +51,24 @@ final class AuthViewModel {
                 partnerLastName: authPayload.user.partnerLastName
             )
         
-            try SecurityManager.saveToKeychain(token: authPayload.accessToken, key: KeychainTokenKey.accessToken.rawValue)
-            try SecurityManager.saveToKeychain(token: authPayload.refreshToken, key: KeychainTokenKey.refreshToken.rawValue)
+            try SecurityManager.saveToKeychain(
+                token: authPayload.accessToken,
+                key: KeychainTokenKey.accessToken.rawValue
+            )
+            try SecurityManager.saveToKeychain(
+                token: authPayload.refreshToken,
+                key: KeychainTokenKey.refreshToken.rawValue
+            )
             
             modelContext.insert(localUser)
             try modelContext.save()
- 
-            return localUser
+            
+            self.localUser = localUser
 
         } catch {
-            print("Failed to setAuthorize")
-            throw error
+            print("Authorization failed: \(error.localizedDescription)")
+            GIDSignIn.sharedInstance.signOut()
+            self.localUser = nil
         }
     }
     
@@ -75,13 +82,23 @@ final class AuthViewModel {
             )
         )
         
-        _ = try await networkManager.makeHTTPPostRequest(httpBody: httpBody, withBearer: true)
+        let data = try await networkManager.makeHTTPPostRequest(httpBody: httpBody, withBearer: true)
+        
+//        This is the schema of graphql responses of mutation
+//        {"data":{"updateUser":{"id":"someID"}}}
+        let decodedData = try DataSerializer.decodeJSON(data: data) as GraphQLRespPayload<UpdateUserResponse>
         
         self.localUser!.email = email
         self.localUser!.firstName = firstName
         self.localUser!.lastName = lastName
         
-        try modelContext.save()
+        try LocalUser.updatePersonalInfo(
+            id: decodedData.data.updateUser.id,
+            email: email,
+            firstName: firstName,
+            lastName: lastName,
+            modelContext: modelContext
+        )
     }
     
     func updateFamilyTitle(familyTitle: String) async throws {
@@ -91,7 +108,7 @@ final class AuthViewModel {
     func logOutBackend() async throws {
         let httpBody = try graphQLManager.generateHTTPBody(
             query: GraphQLQuery.logOut.generate(type: .mutation),
-            variables: LogOutInput.init(id: localUser!.id)
+            variables: UserIdResponse.init(id: localUser!.id)
         )
         
         do {
@@ -99,9 +116,9 @@ final class AuthViewModel {
         } catch {
             print("Failed to delete refresh token from backend: \(error)")
         }
-     
-        GIDSignIn.sharedInstance.signOut()
+        
         SecurityManager.removeTokensFromKeychain()
+        GIDSignIn.sharedInstance.signOut()
         localUser = nil
     }
 

@@ -49,7 +49,7 @@ enum SecurityManager {
     }
     
     static func removeTokensFromKeychain() {
-        for key in [KeychainTokenKey.accessToken.rawValue, KeychainTokenKey.refreshToken.rawValue] {
+        for key in KeychainTokenKey.getKeys() {
             let query: [String: Any] = [
                 kSecClass as String: kSecClassGenericPassword,
                 kSecAttrAccount as String: key
@@ -59,4 +59,3 @@ enum SecurityManager {
     }
 
 }
-

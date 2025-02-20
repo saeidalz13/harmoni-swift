@@ -82,6 +82,7 @@ struct UpdateUserView: View {
             alertMessage = "Failed to update personal info!"
             print("Error saving user: \(error)")
         }
+        
         isLoading = false
         showAlert = true
     }

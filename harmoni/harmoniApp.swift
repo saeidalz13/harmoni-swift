@@ -77,9 +77,10 @@ struct harmoniApp: App {
                         
                         do {
                             if let localUser = try container.mainContext.fetch(fd).first {
+                                print(localUser.firstName ?? "no first name")
                                 self.authViewModel.localUser = localUser
                             } else {
-                                
+                                print("no user on appear")
 //                                guard let idToken = user.idToken else {
 //                                    print("No id token was found in Google payload")
 //                                    return

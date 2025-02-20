@@ -53,16 +53,7 @@ struct AuthView: View {
             }
             
             Task {
-                do {
-                    self.authViewModel.localUser = try await authViewModel.authenticateBackend(
-                        idToken: idToken.tokenString
-                    )
-                    
-                } catch {
-                    GIDSignIn.sharedInstance.signOut()
-                    self.authViewModel.localUser = nil
-                    print("Authorization failed: \(error.localizedDescription)")
-                }
+                await authViewModel.authenticateBackend(idToken: idToken.tokenString)
             }
 
         }
