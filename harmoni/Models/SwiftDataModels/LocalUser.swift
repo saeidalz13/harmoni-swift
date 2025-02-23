@@ -70,4 +70,24 @@ final class LocalUser: Identifiable {
 
         try modelContext.save()
     }
+    
+    static func saveNew(user: User, modelContext: ModelContext) throws -> LocalUser {
+        let localUser = LocalUser.init(
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            familyId: user.familyId,
+            familyTitle: user.familyTitle,
+            partnerId: user.partnerId,
+            partnerEmail: user.partnerEmail,
+            partnerFirstName: user.partnerFirstName,
+            partnerLastName: user.partnerLastName
+        )
+
+        modelContext.insert(localUser)
+        try modelContext.save()
+        
+        return localUser
+    }
 }

@@ -10,8 +10,6 @@ import GoogleSignIn
 
 @Observable @MainActor
 final class AuthViewModel {
-    private var networkManager: NetworkManager
-    private var graphQLManager: GraphQLManager
     private var modelContext: ModelContext
     private var _localUser: LocalUser?
 
@@ -19,81 +17,55 @@ final class AuthViewModel {
         get { return _localUser }
         set { _localUser = newValue }
     }
-
-
-    init(networkManager: NetworkManager, graphQLManager: GraphQLManager, modelContext: ModelContext) {
-        self.networkManager = networkManager
-        self.graphQLManager = graphQLManager
+    
+    init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
     
     func authenticateBackend(idToken: String) async {
-        do {            
-            let httpBody = try graphQLManager.generateHTTPBody(
-                query: GraphQLQuery.authenticateIdToken.generate(type: .mutation),
-                variables: AuthenticateIdTokenInput.init(idToken: idToken)
-            )
-
-            let respData = try await networkManager.makeHTTPPostRequest(httpBody: httpBody, withBearer: false)
-            let userResp = try DataSerializer.decodeJSON(data: respData) as GraphQLRespPayload<AuthenticateIdTokenResponse>
-
-            let authPayload = userResp.data.authenticateIdToken            
-            let localUser = LocalUser.init(
-                id: authPayload.user.id,
-                email: authPayload.user.email,
-                firstName: authPayload.user.firstName,
-                lastName: authPayload.user.lastName,
-                familyId: authPayload.user.familyId,
-                familyTitle: authPayload.user.familyTitle,
-                partnerId: authPayload.user.partnerId,
-                partnerEmail: authPayload.user.partnerEmail,
-                partnerFirstName: authPayload.user.partnerFirstName,
-                partnerLastName: authPayload.user.partnerLastName
-            )
-        
-            try SecurityManager.saveToKeychain(
-                token: authPayload.accessToken,
-                key: KeychainTokenKey.accessToken.rawValue
-            )
-            try SecurityManager.saveToKeychain(
-                token: authPayload.refreshToken,
-                key: KeychainTokenKey.refreshToken.rawValue
+        do {
+            let gqlData = try await GraphQLManager.shared.execMutation(
+                query: GraphQLQuery.authenticateIdToken,
+                input: AuthenticateIdTokenInput.init(
+                    idToken: idToken
+                ),
+                withBearer: false
+            ) as AuthenticateIdTokenResponse
+            
+            let authPayload = gqlData.authenticateIdToken
+            
+            try KeychainManager.shared.saveTokensToKeychain(
+                accessToken: authPayload!.accessToken,
+                refreshToken: authPayload!.refreshToken
             )
             
-            modelContext.insert(localUser)
-            try modelContext.save()
-            
-            self.localUser = localUser
+            self.localUser = try LocalUser.saveNew(user: authPayload!.user, modelContext: modelContext)
 
         } catch {
             print("Authorization failed: \(error.localizedDescription)")
+            KeychainManager.shared.removeTokensFromKeychain()
             GIDSignIn.sharedInstance.signOut()
             self.localUser = nil
         }
     }
     
     func updateUser(email: String, firstName: String, lastName: String) async throws {
-        let httpBody = try graphQLManager.generateHTTPBody(
-            query: GraphQLQuery.updateUser.generate(type: .mutation),
-            variables: UpdateUserInput.init(
+        let gqlData = try await GraphQLManager.shared.execMutation(
+            query: GraphQLQuery.updateUser,
+            input: UpdateUserInput.init(
                 email: email,
                 firstName: firstName,
                 lastName: lastName
-            )
-        )
-        
-        let data = try await networkManager.makeHTTPPostRequest(httpBody: httpBody, withBearer: true)
-        
-//        This is the schema of graphql responses of mutation
-//        {"data":{"updateUser":{"id":"someID"}}}
-        let decodedData = try DataSerializer.decodeJSON(data: data) as GraphQLRespPayload<UpdateUserResponse>
+            ),
+            withBearer: true
+        ) as UpdateUserResponse
         
         self.localUser!.email = email
         self.localUser!.firstName = firstName
         self.localUser!.lastName = lastName
         
         try LocalUser.updatePersonalInfo(
-            id: decodedData.data.updateUser.id,
+            id: gqlData.updateUser!.id,
             email: email,
             firstName: firstName,
             lastName: lastName,
@@ -106,18 +78,19 @@ final class AuthViewModel {
     }
     
     func logOutBackend() async throws {
-        let httpBody = try graphQLManager.generateHTTPBody(
-            query: GraphQLQuery.logOut.generate(type: .mutation),
-            variables: UserIdResponse.init(id: localUser!.id)
-        )
-        
         do {
-            _ = try await networkManager.makeHTTPPostRequest(httpBody: httpBody, withBearer: true)
+            let gqlData = try await GraphQLManager.shared.execMutation(
+                query: GraphQLQuery.logOut,
+                input: UserIdResponse.init(id: localUser!.id),
+                withBearer: true
+            ) as LogOutInput
+            
+            print(gqlData.logOut!.id)
         } catch {
             print("Failed to delete refresh token from backend: \(error)")
         }
         
-        SecurityManager.removeTokensFromKeychain()
+        KeychainManager.shared.removeTokensFromKeychain()
         GIDSignIn.sharedInstance.signOut()
         localUser = nil
     }

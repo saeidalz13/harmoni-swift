@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 import GoogleSignIn
 
+
 @main
 struct harmoniApp: App {
     @State var authViewModel: AuthViewModel
@@ -19,6 +20,7 @@ struct harmoniApp: App {
     init() {
         do {
             let storeURL = URL.documentsDirectory.appending(path: "database.sqlite")
+            print("Database path:", storeURL.path)
             let schema = Schema(
                 [
                     LocalUser.self
@@ -31,8 +33,6 @@ struct harmoniApp: App {
         }
         
         self._authViewModel = State(initialValue: .init(
-                networkManager: NetworkManager(),
-                graphQLManager: GraphQLManager(),
                 modelContext: container.mainContext)
         )
     }
@@ -52,14 +52,14 @@ struct harmoniApp: App {
                             return
                         }
                         
-                        let accessToken = SecurityManager.retrieveFromKeychain(key: KeychainTokenKey.accessToken.rawValue)
+                        let accessToken = KeychainManager.shared.retrieveFromKeychain(key: KeychainTokenKey.accessToken.rawValue)
                         if accessToken == nil {
                             print("no access token in keychain")
                             GIDSignIn.sharedInstance.signOut()
                             return
                         }
                         
-                        let refreshToken = SecurityManager.retrieveFromKeychain(key: KeychainTokenKey.refreshToken.rawValue)
+                        let refreshToken = KeychainManager.shared.retrieveFromKeychain(key: KeychainTokenKey.refreshToken.rawValue)
                         if refreshToken == nil {
                             print("no refresh token in keychain")
                             GIDSignIn.sharedInstance.signOut()

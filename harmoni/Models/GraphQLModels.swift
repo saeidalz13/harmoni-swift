@@ -5,10 +5,24 @@
 //  Created by Saeid Alizadeh on 2025-02-01.
 //
 
-struct GraphQLRespPayload<T: Codable>: Codable {
-    let data: T
+// General GraphQL Schemas
+struct RespPayloadErrorLocation: Codable {
+    let line: Int
+    let column: Int
 }
 
+struct RespPayloadError: Codable {
+    let message: String
+    let locations: [RespPayloadErrorLocation]?
+    let path: [String]?
+}
+
+struct GraphQLRespPayload<T: Codable>: Codable {
+    let data: T?
+    let errors: [RespPayloadError]?
+}
+
+// General User
 struct User: Codable {
     let id: String
     let email: String
@@ -22,12 +36,8 @@ struct User: Codable {
     let partnerLastName: String?
 }
 
-struct AuthPayload: Codable {
-    let user: User
-    let accessToken: String
-    let refreshToken: String
-}
 
+// Update User
 struct UpdateUserInput: Codable {
     let email: String
     let firstName: String
@@ -39,18 +49,39 @@ struct UserIdResponse: Codable {
 }
 
 struct UpdateUserResponse: Codable {
-    let updateUser: UserIdResponse
+    let updateUser: UserIdResponse?
+}
+
+// Authentication
+struct AuthPayload: Codable {
+    let user: User
+    let accessToken: String
+    let refreshToken: String
 }
 
 struct AuthenticateIdTokenResponse: Codable {
-    let authenticateIdToken: AuthPayload
+    let authenticateIdToken: AuthPayload?
 }
 
 struct AuthenticateIdTokenInput: Codable {
     let idToken: String
 }
 
-struct GraphQLSingleMutation: Codable  {
-    let query: String
-    let variables: String
+// Renewal access Token
+struct RenewAccessTokenInput: Codable {
+    let refreshToken: String
+}
+
+struct RenewAccessTokenOutput: Codable {
+    let id: String
+    let accessToken: String
+}
+
+struct RenewAccessTokenResponse: Codable {
+    let renewAccessToken: RenewAccessTokenOutput?
+}
+
+// logout
+struct LogOutInput: Codable  {
+    let logOut: UserIdResponse?
 }

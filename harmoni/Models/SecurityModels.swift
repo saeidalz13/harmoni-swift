@@ -5,14 +5,12 @@
 //  Created by Saeid Alizadeh on 2025-02-16.
 //
 
-enum KeychainTokenKey: String {
-    case accessToken = "accessToken"
-    case refreshToken = "refreshToken"
-    
-    static func getKeys() -> [String] {
-        return [KeychainTokenKey.accessToken.rawValue, KeychainTokenKey.refreshToken.rawValue]
-    }
+struct AppTokens {
+    let accessToken: String
+    let refreshToken: String
 }
+
+
 
 enum SecurityError: Error {
     case invalidToken

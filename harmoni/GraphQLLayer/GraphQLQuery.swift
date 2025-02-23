@@ -9,12 +9,16 @@ enum GraphQLRequestType: String {
     case query = "query"
 }
 
-
 enum GraphQLQuery {
     case updateUser
     case authenticateIdToken
     case logOut
+    case renewAccessToken
     
+    var name: String {
+        return String(describing: self)
+    }
+
     func generate(type: GraphQLRequestType) -> String {
         var inputs: (String, String)
         var returnField: String
@@ -43,6 +47,13 @@ enum GraphQLQuery {
         case .logOut:
             inputs = ("logOut", "LogOut")
             returnField = "id"
+            
+        case .renewAccessToken:
+            inputs = ("renewAccessToken", "RenewAccessToken")
+            returnField = """
+            id
+            accessToken
+            """
         }
         
         return queryTemplate(type: type, inputs: inputs, returnFields: returnField)
@@ -58,31 +69,3 @@ enum GraphQLQuery {
         """
     }
 }
-//
-//    var preparedString: String {
-//        switch self {
-//        case .updateUser:
-//            return  "mutation UpdateUser($input: UpdateUserInput!) { updateUser(input: $input) { id } }"
-//        
-//        case .authenticateIdToken:
-//            return  """
-//"mutation AuthenticateIdToken($input: AuthenticateIdTokenInput!) { 
-//    authenticateIdToken(input: $input) { 
-//        user {
-//            id 
-//            email 
-//            firstName 
-//            lastName 
-//            familyTitle 
-//            familyId
-//            partnerId
-//        }
-//        accessToken
-//        refreshToken
-//     } 
-//}
-//"""
-//        }
-//    }
-//    
-

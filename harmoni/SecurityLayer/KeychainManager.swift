@@ -8,12 +8,20 @@
 import Security
 import Foundation
 
+enum KeychainTokenKey: String {
+    case accessToken = "accessToken"
+    case refreshToken = "refreshToken"
+    
+    static func getKeys() -> [String] {
+        return [KeychainTokenKey.accessToken.rawValue, KeychainTokenKey.refreshToken.rawValue]
+    }
+}
 
-final class SecurityManager: Sendable {
-    static let shared = SecurityManager()
+final class KeychainManager: Sendable {
+    static let shared = KeychainManager()
     private init() {}
     
-    private func saveToKeychain(token: String, key: String) throws {
+    func saveToKeychain(token: String, key: String) throws {
         let data = try DataSerializer.textToData(text: token)
         
         let query: [String: Any] = [
@@ -23,6 +31,14 @@ final class SecurityManager: Sendable {
             kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlocked
         ]
         SecItemAdd(query as CFDictionary, nil)
+    }
+    
+    func removeTokenByKey(key: String) {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key
+        ]
+        SecItemDelete(query as CFDictionary)
     }
     
     func retrieveFromKeychain(key: String) -> String? {

@@ -80,7 +80,7 @@ struct UpdateUserView: View {
         } catch {
             alertTitle = "Error"
             alertMessage = "Failed to update personal info!"
-            print("Error saving user: \(error)")
+            print("Error update user: \(error.localizedDescription)")
         }
         
         isLoading = false

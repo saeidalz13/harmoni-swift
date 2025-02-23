@@ -43,6 +43,9 @@ enum DataSerializer {
             return try decoder.decode(T.self, from: data)
             
         } catch {
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("Raw JSON: \(jsonString)")
+            }
             throw DataSerializationError.jsonDecoding(data: data, error: error)
         }
     }
