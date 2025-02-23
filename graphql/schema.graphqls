@@ -1,0 +1,82 @@
+"""
+The @defer directive may be specified on a fragment spread to imply de-prioritization, that causes the fragment to be omitted in the initial response, and delivered as a subsequent response afterward. A query with @defer directive will cause the request to potentially return multiple responses, where non-deferred data is delivered in the initial response and data deferred delivered in a subsequent response. @include and @skip take precedence over @defer.
+"""
+directive @defer(if: Boolean = true, label: String) on FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+"""
+A directive used by the Apollo iOS client to annotate operations or fragments that should be used exclusively for generating local cache mutations instead of as standard operations.
+"""
+directive @apollo_client_ios_localCacheMutation on QUERY | MUTATION | SUBSCRIPTION | FRAGMENT_DEFINITION
+
+"""
+A directive used by the Apollo iOS code generation engine to generate custom import statements in operation or fragment definition files. An import statement to import a module with the name provided in the `module` argument will be added to the generated definition file.
+"""
+directive @import(
+  """The name of the module to import."""
+  module: String!
+) repeatable on QUERY | MUTATION | SUBSCRIPTION | FRAGMENT_DEFINITION
+
+"""Attach extra information to a given type."""
+directive @typePolicy(
+  """
+  A selection set containing fields used to compute the cache key of an object. Referenced fields must have non-nullable scalar types. Order is important.
+  """
+  keyFields: String!
+) on OBJECT | INTERFACE
+
+type AuthPayload {
+  user: User!
+  accessToken: String!
+  refreshToken: String!
+}
+
+input AuthenticateIdTokenInput {
+  idToken: String!
+}
+
+input LogOutInput {
+  id: String!
+}
+
+type Mutation {
+  updateUser(input: UpdateUserInput!): UserIdResponse
+  authenticateIdToken(input: AuthenticateIdTokenInput!): AuthPayload
+  logOut(input: LogOutInput!): UserIdResponse
+  renewAccessToken(input: RenewAccessTokenInput!): RenewAccessTokenOutput
+}
+
+type Query {
+  healthCheck: String!
+}
+
+input RenewAccessTokenInput {
+  refreshToken: String!
+}
+
+type RenewAccessTokenOutput {
+  id: String!
+  accessToken: String!
+}
+
+input UpdateUserInput {
+  email: String!
+  firstName: String!
+  lastName: String!
+}
+
+type User {
+  id: String!
+  email: String!
+  firstName: String
+  lastName: String
+  familyTitle: String
+  familyId: String
+  partnerId: String
+  partnerEmail: String
+  partnerFirstName: String
+  partnerLastName: String
+}
+
+type UserIdResponse {
+  id: String!
+}

@@ -23,7 +23,7 @@ enum ServerEndpoint {
         case .googleWebSocket:
             return URL(string:  "ws://localhost:1919/ws-oauth2")!
         case .graphQL:
-            return URL(string: "http://localhost:1919/query")!
+            return URL(string: "http://localhost:1919/graphql")!
         }
     }
 }

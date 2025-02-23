@@ -14,6 +14,9 @@ enum NetworkError: Error {
     case serverError(code: Int)
     case invalidWebSocketMessageType(desc: String)
     case unknown(Error)
+    case invalidResponse
+    case forbidden
+    case expiredAccessToken
     
     var localizedDescription: String {
         switch self {
@@ -29,7 +32,14 @@ enum NetworkError: Error {
             return "invalid type of data in ws conn: \(desc)"
         case .unknown(let error):
             return "An unknown error occurred: \(error.localizedDescription)"
+        case .invalidResponse:
+            return "response is not of type HTTPURLResponse"
+        case .forbidden:
+            return "invalid access token"
+        case .expiredAccessToken:
+            return "expired access token"
         }
+        
     }
     
     static func fromNSError(_ error: NSError) -> NetworkError {

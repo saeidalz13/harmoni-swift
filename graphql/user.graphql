@@ -1,0 +1,15 @@
+mutation authenticateIdToken($input: AuthenticateIdTokenInput!) {
+    authenticateIdToken( input: $input ) {
+        user {
+            id
+            email
+            firstName
+            lastName
+            familyTitle
+            familyId
+            partnerId
+        }
+        accessToken
+        refreshToken
+    }
+}
