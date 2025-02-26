@@ -1,26 +1,9 @@
 //
-//  GraphQLModel.swift
+//  AuthModels.swift
 //  harmoni
 //
-//  Created by Saeid Alizadeh on 2025-02-01.
+//  Created by Saeid Alizadeh on 2025-02-23.
 //
-
-// General GraphQL Schemas
-struct RespPayloadErrorLocation: Codable {
-    let line: Int
-    let column: Int
-}
-
-struct RespPayloadError: Codable {
-    let message: String
-    let locations: [RespPayloadErrorLocation]?
-    let path: [String]?
-}
-
-struct GraphQLRespPayload<T: Codable>: Codable {
-    let data: T?
-    let errors: [RespPayloadError]?
-}
 
 // General User
 struct User: Codable {
@@ -28,8 +11,8 @@ struct User: Codable {
     let email: String
     let firstName: String?
     let lastName: String?
-    let familyTitle: String?
-    let familyId: String?
+    let bondTitle: String?
+    let bondId: String?
     let partnerId: String?
     let partnerEmail: String?
     let partnerFirstName: String?

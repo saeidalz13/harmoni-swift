@@ -44,11 +44,12 @@ final class GraphQLManager: Sendable {
                 }
                 
             } catch {
-                if attempts > 3 {
+                attempts += 1
+                
+                if attempts >= 3 {
                     throw error
                 }
                 sleep(1)
-                attempts += 1
                 continue
             }
         }
@@ -61,7 +62,7 @@ final class GraphQLManager: Sendable {
         }
         
         guard let gqlData = gqlPayload.data else {
-            throw GraphQLError.unavailableData(queryName: query.name)
+            throw GraphQLError.unavailableData(queryName: query.str)
         }
         
         return gqlData
@@ -88,10 +89,10 @@ final class GraphQLManager: Sendable {
                 httpResp = try await NetworkManager.shared.makeHTTPPostRequest(httpBody: httpReqBody, withBearer: false)
                 retry = false
             } catch {
-                if attempts > 3 {
+                attempts += 1
+                if attempts >= 3 {
                     throw error
                 }
-                attempts += 1
                 sleep(1)
                 continue
             }

@@ -7,6 +7,19 @@
 
 import Foundation
 
+
+enum GeneralError: Error, LocalizedError {
+    case optionalFieldUnavailable(fieldName: String)
+    
+    var localizedDescription: String {
+        switch self {
+        case .optionalFieldUnavailable(let fieldName):
+            return "\(fieldName) is unavailable in object"
+        }
+    }
+}
+
+
 enum DataSerializationError: Error, LocalizedError {
     case textToDataEncoding
     case dataToTextDecoding

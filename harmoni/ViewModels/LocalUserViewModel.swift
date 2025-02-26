@@ -9,7 +9,7 @@ import SwiftData
 import GoogleSignIn
 
 @Observable @MainActor
-final class AuthViewModel {
+final class LocalUserViewModel {
     private var modelContext: ModelContext
     private var _localUser: LocalUser?
 
@@ -73,8 +73,45 @@ final class AuthViewModel {
         )
     }
     
-    func updateFamilyTitle(familyTitle: String) async throws {
+    func updateBond(bondTitle: String) async throws {
+        guard let bondId = localUser!.bondId else {
+            throw GeneralError.optionalFieldUnavailable(fieldName: "bondId")
+        }
         
+       let gqlData = try await GraphQLManager.shared.execMutation(
+        query: GraphQLQuery.updateBond,
+        input: UpdateBondInput(bondId: bondId, bondTitle: bondTitle),
+        withBearer: true
+       ) as UpdateBondResponse
+        
+        try LocalUser.updateBond(
+            id: localUser!.id,
+            bondId: gqlData.updateBond!.id,
+            bondTitle: bondTitle,
+            modelContext: modelContext
+        )
+        print(gqlData.updateBond!.createdAt)
+        
+        localUser!.bondTitle = bondTitle
+        localUser!.bondId = gqlData.updateBond!.id
+    }
+    
+    func createBond(bondTitle: String) async throws {
+        let gqlData = try await GraphQLManager.shared.execMutation(
+            query: GraphQLQuery.createBond,
+            input: CreateBondInput(bondTitle: bondTitle),
+            withBearer: true
+        ) as CreateBondResponse
+        
+        try LocalUser.updateBond(
+            id: localUser!.id,
+            bondId: gqlData.createBond!.id,
+            bondTitle: bondTitle,
+            modelContext: modelContext
+        )
+        
+        localUser!.bondTitle = bondTitle
+        localUser!.bondId = gqlData.createBond!.id
     }
     
     func logOutBackend() async throws {

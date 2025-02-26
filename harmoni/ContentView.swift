@@ -7,16 +7,16 @@
 import SwiftUI
 
 struct ContentView: View {
-    @Environment(AuthViewModel.self) private var authViewModel
+    @Environment(LocalUserViewModel.self) private var localUserViewModel
     
     var body: some View {
         ZStack {
-            if authViewModel.localUser != nil {
+            if localUserViewModel.localUser != nil {
                 MainView()
-                    .environment(authViewModel)
+                    .environment(localUserViewModel)
             } else {
                 AuthView()
-                    .environment(authViewModel)
+                    .environment(localUserViewModel)
             }
         }
     }

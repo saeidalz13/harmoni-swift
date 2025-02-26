@@ -11,7 +11,7 @@ import GoogleSignIn
 
 
 struct AuthView: View {
-    @Environment(AuthViewModel.self) private var authViewModel
+    @Environment(LocalUserViewModel.self) private var authViewModel
     @State private var showAlert: Bool = false
     
     var body: some View {

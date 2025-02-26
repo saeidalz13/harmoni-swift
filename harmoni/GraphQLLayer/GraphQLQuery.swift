@@ -4,6 +4,8 @@
 //
 //  Created by Saeid Alizadeh on 2025-02-10.
 //
+import Foundation
+
 enum GraphQLRequestType: String {
     case mutation = "mutation"
     case query = "query"
@@ -14,26 +16,31 @@ enum GraphQLQuery {
     case authenticateIdToken
     case logOut
     case renewAccessToken
+    case createBond
+    case updateBond
     
-    var name: String {
+    var str: String {
         return String(describing: self)
     }
 
+    private var capitalizedStr: String {
+        let description = String(describing: self)
+        return description.prefix(1).capitalized + description.dropFirst()
+    }
+    
     func generate(type: GraphQLRequestType) -> String {
-        var inputs: (String, String)
         var returnField: String
         
         switch self {
         case .authenticateIdToken:
-            inputs = ("authenticateIdToken", "AuthenticateIdToken")
             returnField = """
             user {
                 id 
                 email 
                 firstName 
                 lastName 
-                familyTitle 
-                familyId
+                bondTitle 
+                bondId
                 partnerId
             }
             accessToken
@@ -41,31 +48,46 @@ enum GraphQLQuery {
             """
             
         case .updateUser:
-            inputs = ("updateUser", "UpdateUser")
             returnField = "id"
             
         case .logOut:
-            inputs = ("logOut", "LogOut")
             returnField = "id"
             
         case .renewAccessToken:
-            inputs = ("renewAccessToken", "RenewAccessToken")
             returnField = """
             id
             accessToken
             """
+        case .createBond:
+            returnField = """
+            id
+            bondTitle
+            createdAt
+            """
+        case .updateBond:
+            returnField = """
+            id
+            bondTitle
+            createdAt
+            """
         }
         
-        return queryTemplate(type: type, inputs: inputs, returnFields: returnField)
+        return queryTemplate(type: type, returnFields: returnField)
     }
     
-    private func queryTemplate(type: GraphQLRequestType, inputs: (String, String), returnFields: String) -> String {
+    func getFieldNames<T>(from object: T) -> String {
+        let mirror = Mirror(reflecting: object)
+        return mirror.children.compactMap { $0.label }.joined(separator: "\n")
+    }
+    
+    private func queryTemplate(type: GraphQLRequestType, returnFields: String) -> String {
         return """
-        \(type.rawValue) \(inputs.1)($input: \(inputs.1)Input!) { 
-            \(inputs.0)(input: $input) { 
+        \(type.rawValue) \(capitalizedStr)($input: \(capitalizedStr)Input!) { 
+            \(str)(input: $input) { 
                 \(returnFields)
             } 
         }
         """
     }
 }
+

@@ -12,7 +12,7 @@ import GoogleSignIn
 
 @main
 struct harmoniApp: App {
-    @State var authViewModel: AuthViewModel
+    @State var localUserViewModel: LocalUserViewModel
     @State var localUser: LocalUser?
     
     var container: ModelContainer
@@ -32,7 +32,7 @@ struct harmoniApp: App {
             fatalError("Failed to configure SwiftData container.")
         }
         
-        self._authViewModel = State(initialValue: .init(
+        self._localUserViewModel = State(initialValue: .init(
                 modelContext: container.mainContext)
         )
     }
@@ -40,7 +40,7 @@ struct harmoniApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(authViewModel)
+                .environment(localUserViewModel)
                 .modelContainer(container)
                 .onOpenURL { url in
                     GIDSignIn.sharedInstance.handle(url)
@@ -78,7 +78,7 @@ struct harmoniApp: App {
                         do {
                             if let localUser = try container.mainContext.fetch(fd).first {
                                 print(localUser.firstName ?? "no first name")
-                                self.authViewModel.localUser = localUser
+                                self.localUserViewModel.localUser = localUser
                             } else {
                                 print("no user on appear")
 //                                guard let idToken = user.idToken else {

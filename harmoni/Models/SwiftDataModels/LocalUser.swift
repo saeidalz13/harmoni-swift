@@ -17,8 +17,8 @@ final class LocalUser: Identifiable {
     @Attribute(.unique) var email: String
     var firstName: String?
     var lastName: String?
-    var familyId: String?
-    var familyTitle: String?
+    var bondId: String?
+    var bondTitle: String?
     var partnerId: String?
     var partnerEmail: String?
     var partnerFirstName: String?
@@ -29,8 +29,8 @@ final class LocalUser: Identifiable {
         email: String,
         firstName: String? = nil,
         lastName: String? = nil,
-        familyId: String? = nil,
-        familyTitle: String? = nil,
+        bondId: String? = nil,
+        bondTitle: String? = nil,
         partnerId: String? = nil,
         partnerEmail: String? = nil,
         partnerFirstName: String? = nil,
@@ -40,8 +40,8 @@ final class LocalUser: Identifiable {
         self.firstName = firstName
         self.lastName = lastName
         self.email = email
-        self.familyId = familyId
-        self.familyTitle = familyTitle
+        self.bondId = bondId
+        self.bondTitle = bondTitle
         self.partnerId = partnerId
         self.partnerEmail = partnerEmail
         self.partnerFirstName = partnerFirstName
@@ -77,8 +77,8 @@ final class LocalUser: Identifiable {
             email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
-            familyId: user.familyId,
-            familyTitle: user.familyTitle,
+            bondId: user.bondId,
+            bondTitle: user.bondTitle,
             partnerId: user.partnerId,
             partnerEmail: user.partnerEmail,
             partnerFirstName: user.partnerFirstName,
@@ -89,5 +89,20 @@ final class LocalUser: Identifiable {
         try modelContext.save()
         
         return localUser
+    }
+    
+    static func updateBond(id: String, bondId: String, bondTitle: String, modelContext: ModelContext) throws {
+        let fetchDescriptor = FetchDescriptor<LocalUser>(
+            predicate: #Predicate { $0.id == id }
+        )
+
+        guard let existingUser = try modelContext.fetch(fetchDescriptor).first else {
+            throw NSError(domain: "UpdateUserError", code: 404, userInfo: [NSLocalizedDescriptionKey: "User not found"])
+        }
+        
+        existingUser.bondId = bondId
+        existingUser.bondTitle = bondTitle
+        
+        try modelContext.save()
     }
 }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct Logout: View {
-    @Environment(AuthViewModel.self) private var authViewModel
+    @Environment(LocalUserViewModel.self) private var localUserViewModel
     
     var body: some View {
         Button("Logout") {
@@ -24,7 +24,7 @@ struct Logout: View {
     
     private func logOut() async {
         do {
-            try await authViewModel.logOutBackend()
+            try await localUserViewModel.logOutBackend()
         }
         catch {
             print(error)
