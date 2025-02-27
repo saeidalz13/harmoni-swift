@@ -114,6 +114,29 @@ final class LocalUserViewModel {
         localUser!.bondId = gqlData.createBond!.id
     }
     
+    func joinBond(bondId: String) async throws {
+        let gqlData = try await GraphQLManager.shared.execMutation(
+            query: GraphQLQuery.joinBond,
+            input: JoinBondInput(bondId: bondId),
+            withBearer: true
+        ) as JoinBondResponse
+       
+        let joinBondPayload = gqlData.joinBond!
+        
+        try LocalUser.updatePartnerBond(
+            id: localUser!.id,
+            joinBondPayload: joinBondPayload,
+            modelContext: modelContext
+        )
+        
+        localUser!.bondId = joinBondPayload.bondId
+        localUser!.bondTitle = joinBondPayload.bondTitle
+        localUser!.partnerId = joinBondPayload.partnerId
+        localUser!.partnerEmail = joinBondPayload.partnerEmail
+        localUser!.partnerFirstName = joinBondPayload.partnerFirstName
+        localUser!.partnerLastName = joinBondPayload.partnerLastName
+    }
+    
     func logOutBackend() async throws {
         do {
             let gqlData = try await GraphQLManager.shared.execMutation(

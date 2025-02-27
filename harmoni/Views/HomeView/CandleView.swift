@@ -83,7 +83,7 @@ struct BondPopoverView: View {
                     Button {
                         UIPasteboard.general.string = bondId
                         copied = true
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                             copied = false
                         }
                     } label: {
@@ -94,19 +94,21 @@ struct BondPopoverView: View {
                 }
                 
                 Divider()
-            
-                TextField("Partner ID", text: $bondIdToJoin)
-                    .padding(5)
-                    .background(Color(.systemGray.withAlphaComponent(0.1)))
-                    .cornerRadius(10)
                 
-                Button {
+                if localUserViewModel.localUser!.partnerId == nil {
+                    TextField("Partner ID", text: $bondIdToJoin)
+                        .padding(5)
+                        .background(Color(.systemGray.withAlphaComponent(0.1)))
+                        .cornerRadius(10)
                     
-                } label: {
-                    RomanticLabelView(isLoading: $isLoading, systemImage: "heart.fill", text: "Merge")
+                    Button {
+                        // Merge
+                    } label: {
+                        RomanticLabelView(isLoading: $isLoading, systemImage: "heart.fill", text: "Merge")
+                    }
+                    .padding(.bottom, 10)
                 }
-                .padding(.bottom, 10)
-                
+            
                 TextField("New Title", text: $newBondTitle)
                     .padding(5)
                     .background(Color(.systemGray.withAlphaComponent(0.1)))
@@ -152,11 +154,15 @@ struct BondPopoverView: View {
                     .background(Color(.systemGray.withAlphaComponent(0.1)))
                     .cornerRadius(10)
                 
-                Button (action:{
-                    print("joined")
-                }) {
-                    Label("Join Bond", systemImage: "person.fill.badge.plus")
+                Button {
+                    Task {
+                        try await localUserViewModel.joinBond(bondId: bondIdToJoin)
+                    }
+                } label: {
+                    RomanticLabelView(isLoading: $isLoading, systemImage: "heart.fill", text: "Merge")
                 }
+                .padding(.bottom, 10)
+
     
             }
         }

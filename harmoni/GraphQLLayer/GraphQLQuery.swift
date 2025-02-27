@@ -18,6 +18,7 @@ enum GraphQLQuery {
     case renewAccessToken
     case createBond
     case updateBond
+    case joinBond
     
     var str: String {
         return String(describing: self)
@@ -58,17 +59,29 @@ enum GraphQLQuery {
             id
             accessToken
             """
+            
         case .createBond:
             returnField = """
             id
             bondTitle
             createdAt
             """
+            
         case .updateBond:
             returnField = """
             id
             bondTitle
             createdAt
+            """
+            
+        case .joinBond:
+            returnField = """
+            bondId
+            bondTitle
+            partnerId
+            partnerEmail
+            partnerFirstName
+            partnerLastName
             """
         }
         

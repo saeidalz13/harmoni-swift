@@ -105,4 +105,23 @@ final class LocalUser: Identifiable {
         
         try modelContext.save()
     }
+    
+    static func updatePartnerBond(id: String, joinBondPayload: JoinBondPayload, modelContext: ModelContext) throws {
+        let fetchDescriptor = FetchDescriptor<LocalUser>(
+            predicate: #Predicate { $0.id == id }
+        )
+        
+        guard let existingUser = try modelContext.fetch(fetchDescriptor).first else {
+            throw NSError(domain: "UpdateUserError", code: 404, userInfo: [NSLocalizedDescriptionKey: "User not found"])
+        }
+        
+        existingUser.bondId = joinBondPayload.bondId
+        existingUser.bondTitle = joinBondPayload.bondTitle
+        existingUser.partnerId = joinBondPayload.partnerId
+        existingUser.partnerEmail = joinBondPayload.partnerEmail
+        existingUser.partnerFirstName = joinBondPayload.partnerFirstName
+        existingUser.partnerLastName = joinBondPayload.partnerLastName
+        
+        try modelContext.save()
+    }
 }

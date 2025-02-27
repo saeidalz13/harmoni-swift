@@ -31,3 +31,21 @@ struct UpdateBondInput: Codable {
 struct UpdateBondResponse: Codable {
     let updateBond: Bond?
 }
+
+//
+struct JoinBondInput: Codable {
+    let bondId: String
+}
+
+struct JoinBondPayload: Codable {
+    let bondId: String
+    let bondTitle: String
+    let partnerId: String
+    let partnerEmail: String
+    let partnerFirstName: String?
+    let partnerLastName: String?
+}
+
+struct JoinBondResponse: Codable {
+    let joinBond: JoinBondPayload?
+}

@@ -48,7 +48,7 @@ struct HomeView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
     
-
+    
 }
 
 struct UserProfileView: View {
@@ -71,8 +71,11 @@ struct UserProfileView: View {
                     Text(u.firstName?.capitalized ?? "Click To Set Name")
                         .font(.caption)
                 } else {
-                    Text(u.partnerId ?? "No Partner!")
-                        .font(.caption)
+                    Text(
+                        u.partnerId != nil ? (u.partnerFirstName?.isEmpty == false ? u.partnerFirstName! : u.partnerEmail ?? "No Partner!") : "No Partner!"
+                    )
+                    
+                    .font(.caption)
                 }
             }
             
@@ -98,20 +101,20 @@ struct UserProfileView: View {
     }
 }
 
-    /// Seeds test users if none exist
+/// Seeds test users if none exist
 //    private func seedTestDataIfNeeded() {
 //        guard let lu = authViewModel.localUser else { return }
 //        print("loading seed data")
-//        
+//
 //        let testUsers = [
 //            LocalUser(id: "1111", email: "user1@example.com", bondTitle: "The Smiths"),
 //            LocalUser(id: "2222", email: "partner@example.com", familyTitle: "The Smiths")
 //        ]
-//        
+//
 //        for user in testUsers {
 //            modelContext.insert(user)
 //        }
-//        
+//
 //        try? modelContext.save()
 //    }
 //
@@ -123,7 +126,7 @@ struct UserProfileView: View {
 //            .frame(width: 50, height: 50)
 //            .padding(.bottom, 5)
 //            .clipShape(Circle())
-//        
+//
 //        if let u = user {
 //            if !isPartner {
 //                Text(u.firstName?.capitalized ?? "Click To Set Name")
@@ -133,7 +136,7 @@ struct UserProfileView: View {
 //                    .font(.caption)
 //            }
 //        }
-//        
+//
 //    }
 //    .frame(width: 80, height: 100)
 //    .padding()

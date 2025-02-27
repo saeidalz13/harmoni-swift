@@ -77,7 +77,6 @@ struct harmoniApp: App {
                         
                         do {
                             if let localUser = try container.mainContext.fetch(fd).first {
-                                print(localUser.firstName ?? "no first name")
                                 self.localUserViewModel.localUser = localUser
                             } else {
                                 print("no user on appear")
