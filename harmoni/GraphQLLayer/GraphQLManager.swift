@@ -16,9 +16,9 @@ final class GraphQLManager: Sendable {
     private init() {}
     
     
-    func execMutation<T: Codable, U: Codable>(query: GraphQLQuery, input: T?, withBearer: Bool) async throws -> U {
+    func execQuery<T: Codable, U: Codable>(query: GraphQLQuery, input: T?, type: GraphQLRequestType = .mutation, withBearer: Bool) async throws -> U {
         var graphQLRequest = GraphQLRequest(
-            query: query.generate(type: .mutation),
+            query: query.generate(type: type, withInput: input != nil),
             variables: ["input": input]
         )
         if input == nil {

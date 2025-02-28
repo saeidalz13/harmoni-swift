@@ -12,6 +12,7 @@ enum GraphQLRequestType: String {
 }
 
 enum GraphQLQuery {
+    // Mutations
     case updateUser
     case authenticateIdToken
     case logOut
@@ -20,16 +21,19 @@ enum GraphQLQuery {
     case updateBond
     case joinBond
     
+    // Queries
+    case partnerInfo
+    
     var str: String {
         return String(describing: self)
     }
-
+    
     private var capitalizedStr: String {
         let description = String(describing: self)
         return description.prefix(1).capitalized + description.dropFirst()
     }
     
-    func generate(type: GraphQLRequestType) -> String {
+    func generate(type: GraphQLRequestType, withInput: Bool = true) -> String {
         var returnField: String
         
         switch self {
@@ -83,17 +87,25 @@ enum GraphQLQuery {
             partnerFirstName
             partnerLastName
             """
+            
+        case .partnerInfo:
+            returnField = """
+            partnerId
+            partnerEmail
+            partnerFirstName
+            partnerLastName
+            """
         }
         
-        return queryTemplate(type: type, returnFields: returnField)
+        
+        if withInput {
+            return generateQueryWithInput(type: type, returnFields: returnField)
+        }
+        
+        return generateQuery(type: type, returnFields: returnField)
     }
     
-    func getFieldNames<T>(from object: T) -> String {
-        let mirror = Mirror(reflecting: object)
-        return mirror.children.compactMap { $0.label }.joined(separator: "\n")
-    }
-    
-    private func queryTemplate(type: GraphQLRequestType, returnFields: String) -> String {
+    private func generateQueryWithInput(type: GraphQLRequestType, returnFields: String) -> String {
         return """
         \(type.rawValue) \(capitalizedStr)($input: \(capitalizedStr)Input!) { 
             \(str)(input: $input) { 
@@ -102,5 +114,22 @@ enum GraphQLQuery {
         }
         """
     }
+    
+    private func generateQuery(type: GraphQLRequestType, returnFields: String) -> String {
+        return """
+       \(type.rawValue) {
+            \(str) { 
+                \(returnFields)
+            } 
+       }
+       """
+    }
+    
+    private func getFieldNames<T>(from object: T) -> String {
+        let mirror = Mirror(reflecting: object)
+        return mirror.children.compactMap { $0.label }.joined(separator: "\n")
+    }
+    
+    
 }
 

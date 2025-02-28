@@ -124,4 +124,33 @@ final class LocalUser: Identifiable {
         
         try modelContext.save()
     }
-}
+    
+    static func updatePartnerInfo(id: String, partnerInfoPayload: PartnerInfoPayload, modelContext: ModelContext) throws {
+        let fetchDescriptor = FetchDescriptor<LocalUser>(
+            predicate: #Predicate { $0.id == id }
+        )
+        
+        guard let existingUser = try modelContext.fetch(fetchDescriptor).first else {
+            throw NSError(domain: "UpdateUserError", code: 404, userInfo: [NSLocalizedDescriptionKey: "User not found"])
+        }
+        
+        existingUser.partnerId = partnerInfoPayload.partnerId
+        existingUser.partnerEmail = partnerInfoPayload.partnerEmail
+        existingUser.partnerFirstName = partnerInfoPayload.partnerFirstName
+        existingUser.partnerLastName = partnerInfoPayload.partnerLastName
+        
+        try modelContext.save()
+    }
+    
+    static func deleteUser(id: String, modelContext: ModelContext) throws {
+        let fetchDescriptor = FetchDescriptor<LocalUser>(
+            predicate: #Predicate { $0.id == id }
+        )
+        
+        guard let existingUser = try modelContext.fetch(fetchDescriptor).first else {
+            throw NSError(domain: "UpdateUserError", code: 404, userInfo: [NSLocalizedDescriptionKey: "User not found"])
+        }
+        
+        modelContext.delete(existingUser)
+        try modelContext.save()
+    }}

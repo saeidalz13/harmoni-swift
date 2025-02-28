@@ -132,7 +132,7 @@ struct BondPopoverView: View {
                 
             } else {
             
-                TextField("New Title", text: $newBondTitle)
+                TextField("New Bond Title", text: $newBondTitle)
                     .padding(5)
                     .background(Color(.systemGray.withAlphaComponent(0.1)))
                     .cornerRadius(10)
@@ -143,13 +143,13 @@ struct BondPopoverView: View {
                     }
                     
                 }) {
-                    Label("Create Bond", systemImage: "plus.circle.fill")
-                        .padding(.bottom, 15)
+                    RomanticLabelView(isLoading: $isLoading, systemImage: "plus.circle.fill", text: "Create")
                 }
+                .padding(.bottom, 10)
 
                 Divider()
 
-                TextField("Bond ID", text: $bondIdToJoin)
+                TextField("Bond ID (from partner)", text: $bondIdToJoin)
                     .padding(5)
                     .background(Color(.systemGray.withAlphaComponent(0.1)))
                     .cornerRadius(10)
@@ -159,11 +159,9 @@ struct BondPopoverView: View {
                         try await localUserViewModel.joinBond(bondId: bondIdToJoin)
                     }
                 } label: {
-                    RomanticLabelView(isLoading: $isLoading, systemImage: "heart.fill", text: "Merge")
+                    RomanticLabelView(isLoading: $isLoading, systemImage: "heart.fill", text: "Join")
                 }
-                .padding(.bottom, 10)
 
-    
             }
         }
         

@@ -68,3 +68,19 @@ struct RenewAccessTokenResponse: Codable {
 struct LogOutInput: Codable  {
     let logOut: UserIdResponse?
 }
+
+// partner
+struct PartnerInfoInput: Codable {
+    let bondId: String
+}
+
+struct PartnerInfoPayload: Codable {
+    let partnerId: String
+    let partnerEmail: String
+    let partnerFirstName: String?
+    let partnerLastName: String?
+}
+
+struct PartnerInfoResponse: Codable {
+    let partnerInfo: PartnerInfoPayload?
+}

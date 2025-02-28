@@ -51,55 +51,6 @@ struct HomeView: View {
     
 }
 
-struct UserProfileView: View {
-    var user: LocalUser?
-    var isPartner: Bool
-    @State var showEditProfile: Bool = false
-    @Environment(LocalUserViewModel.self) private var authViewModel
-    
-    var body: some View {
-        VStack {
-            Image(systemName: "person.crop.circle")
-                .resizable()
-                .scaledToFill()
-                .frame(width: 50, height: 50)
-                .padding(.bottom, 5)
-                .clipShape(Circle())
-            
-            if let u = user {
-                if !isPartner {
-                    Text(u.firstName?.capitalized ?? "Click To Set Name")
-                        .font(.caption)
-                } else {
-                    Text(
-                        u.partnerId != nil ? (u.partnerFirstName?.isEmpty == false ? u.partnerFirstName! : u.partnerEmail ?? "No Partner!") : "No Partner!"
-                    )
-                    
-                    .font(.caption)
-                }
-            }
-            
-        }
-        .frame(width: 80, height: 100)
-        .padding()
-        .background(Color.white.opacity(0.8))
-        .cornerRadius(10)
-        .shadow(radius: 20)
-        .onTapGesture {
-            if !isPartner {
-                showEditProfile = true
-            }
-        }
-        .popover(isPresented: $showEditProfile) {
-            if let lu = authViewModel.localUser {
-                UpdateUserView(user: lu)
-                    .presentationCompactAdaptation(.popover)
-                    .padding()
-                    .frame(maxHeight: 300, alignment: .center)
-            }
-        }
-    }
-}
 
 /// Seeds test users if none exist
 //    private func seedTestDataIfNeeded() {
@@ -118,39 +69,4 @@ struct UserProfileView: View {
 //        try? modelContext.save()
 //    }
 //
-//func userProfileView(user: LocalUser?, isPartner: Bool) -> some View {
-//    VStack {
-//        Image(systemName: "person.crop.circle")
-//            .resizable()
-//            .scaledToFill()
-//            .frame(width: 50, height: 50)
-//            .padding(.bottom, 5)
-//            .clipShape(Circle())
-//
-//        if let u = user {
-//            if !isPartner {
-//                Text(u.firstName?.capitalized ?? "Click To Set Name")
-//                    .font(.caption)
-//            } else {
-//                Text(u.partnerId ?? "No Partner!")
-//                    .font(.caption)
-//            }
-//        }
-//
-//    }
-//    .frame(width: 80, height: 100)
-//    .padding()
-//    .background(Color.white.opacity(0.8))
-//    .cornerRadius(10)
-//    .shadow(radius: 20)
-//    .onTapGesture {
-//        if !isPartner {
-//            isEditingUserInfo = true
-//        }
-//    }
-//    .sheet(isPresented: $isEditingUserInfo) {
-//        if let lu = authViewModel.localUser {
-//            UpdateUserView(user: lu)
-//        }
-//    }
-//}
+

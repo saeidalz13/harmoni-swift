@@ -12,7 +12,7 @@ import GoogleSignIn
 final class LocalUserViewModel {
     private var modelContext: ModelContext
     private var _localUser: LocalUser?
-
+    
     var localUser: LocalUser? {
         get { return _localUser }
         set { _localUser = newValue }
@@ -24,7 +24,7 @@ final class LocalUserViewModel {
     
     func authenticateBackend(idToken: String) async {
         do {
-            let gqlData = try await GraphQLManager.shared.execMutation(
+            let gqlData = try await GraphQLManager.shared.execQuery(
                 query: GraphQLQuery.authenticateIdToken,
                 input: AuthenticateIdTokenInput.init(
                     idToken: idToken
@@ -40,7 +40,7 @@ final class LocalUserViewModel {
             )
             
             self.localUser = try LocalUser.saveNew(user: authPayload!.user, modelContext: modelContext)
-
+            
         } catch {
             print("Authorization failed: \(error.localizedDescription)")
             KeychainManager.shared.removeTokensFromKeychain()
@@ -50,7 +50,7 @@ final class LocalUserViewModel {
     }
     
     func updateUser(email: String, firstName: String, lastName: String) async throws {
-        let gqlData = try await GraphQLManager.shared.execMutation(
+        let gqlData = try await GraphQLManager.shared.execQuery(
             query: GraphQLQuery.updateUser,
             input: UpdateUserInput.init(
                 email: email,
@@ -78,11 +78,11 @@ final class LocalUserViewModel {
             throw GeneralError.optionalFieldUnavailable(fieldName: "bondId")
         }
         
-       let gqlData = try await GraphQLManager.shared.execMutation(
-        query: GraphQLQuery.updateBond,
-        input: UpdateBondInput(bondId: bondId, bondTitle: bondTitle),
-        withBearer: true
-       ) as UpdateBondResponse
+        let gqlData = try await GraphQLManager.shared.execQuery(
+            query: GraphQLQuery.updateBond,
+            input: UpdateBondInput(bondId: bondId, bondTitle: bondTitle),
+            withBearer: true
+        ) as UpdateBondResponse
         
         try LocalUser.updateBond(
             id: localUser!.id,
@@ -97,7 +97,7 @@ final class LocalUserViewModel {
     }
     
     func createBond(bondTitle: String) async throws {
-        let gqlData = try await GraphQLManager.shared.execMutation(
+        let gqlData = try await GraphQLManager.shared.execQuery(
             query: GraphQLQuery.createBond,
             input: CreateBondInput(bondTitle: bondTitle),
             withBearer: true
@@ -115,12 +115,12 @@ final class LocalUserViewModel {
     }
     
     func joinBond(bondId: String) async throws {
-        let gqlData = try await GraphQLManager.shared.execMutation(
+        let gqlData = try await GraphQLManager.shared.execQuery(
             query: GraphQLQuery.joinBond,
             input: JoinBondInput(bondId: bondId),
             withBearer: true
         ) as JoinBondResponse
-       
+        
         let joinBondPayload = gqlData.joinBond!
         
         try LocalUser.updatePartnerBond(
@@ -137,15 +137,45 @@ final class LocalUserViewModel {
         localUser!.partnerLastName = joinBondPayload.partnerLastName
     }
     
+    func getPartner() async throws {
+        guard let bondId = localUser!.bondId else {
+            throw GeneralError.optionalFieldUnavailable(fieldName: "bondId")
+        }
+        
+        let gqlData = try await GraphQLManager.shared.execQuery(
+            query: GraphQLQuery.partnerInfo,
+            input: PartnerInfoInput(bondId: bondId),
+            type: .query,
+            withBearer: true
+        ) as PartnerInfoResponse
+        
+        
+        let partnerInfoPayload = gqlData.partnerInfo!
+        
+        try LocalUser.updatePartnerInfo(
+            id: localUser!.id,
+            partnerInfoPayload: partnerInfoPayload,
+            modelContext: modelContext
+        )
+        
+        localUser!.partnerId = partnerInfoPayload.partnerId
+        localUser!.partnerEmail = partnerInfoPayload.partnerEmail
+        localUser!.partnerFirstName = partnerInfoPayload.partnerFirstName
+        localUser!.partnerLastName = partnerInfoPayload.partnerLastName
+    }
+    
     func logOutBackend() async throws {
         do {
-            let gqlData = try await GraphQLManager.shared.execMutation(
+            let _ = try await GraphQLManager.shared.execQuery(
                 query: GraphQLQuery.logOut,
                 input: UserIdResponse.init(id: localUser!.id),
                 withBearer: true
             ) as LogOutInput
             
-            print(gqlData.logOut!.id)
+            // TODO: remove this
+//            try LocalUser.deleteUser(id: localUser!.id, modelContext: modelContext)
+//            print("deleted user")
+
         } catch {
             print("Failed to delete refresh token from backend: \(error)")
         }
@@ -154,6 +184,6 @@ final class LocalUserViewModel {
         GIDSignIn.sharedInstance.signOut()
         localUser = nil
     }
-
+    
 }
 

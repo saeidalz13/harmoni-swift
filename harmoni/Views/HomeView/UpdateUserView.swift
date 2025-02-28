@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct UpdateUserView: View {
-    @Environment(\.presentationMode) var presentationMode
+//    @Environment(\.presentationMode) var presentationMode
     @Environment(LocalUserViewModel.self) private var localUserViewModel
     var user: LocalUser
     
