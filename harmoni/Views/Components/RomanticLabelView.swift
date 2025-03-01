@@ -7,25 +7,22 @@
 import SwiftUI
 
 struct RomanticLabelView: View {
+    // TODO: Add a success binding variable to this
     @Binding var isLoading: Bool
-    var systemImage: String
+    var systemImage: String?
     var text: String
+    var color: Color = Color.pink.opacity(0.9)
     
     var body: some View {
-        LabelContent(isLoading: isLoading, text: text, systemImage: systemImage)
-            .padding(8)
-            .background(isLoading ? LinearGradient(
-                colors: [.black, .black],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing) : LinearGradient(
-                    colors: [Color.pink, Color.red],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
+        LabelContent(isLoading: isLoading, text: text, systemImage: systemImage ?? "")
+            .font(.subheadline)
+            .fontWeight(.semibold)
+            .padding(.vertical, 10)
+            .padding(.horizontal, 20)
+            .background(isLoading ? .black : color)
             .foregroundColor(.white)
-            .cornerRadius(12)
-            .shadow(color: .black.opacity(0.4), radius: 5, x: 0, y: 3)
+            .cornerRadius(20)
+            .shadow(color: .pink.opacity(0.15), radius: 8, x: 0, y: 6)
             .opacity(isLoading ? 0.8 : 1.0)
             .animation(.easeInOut, value: isLoading)
     }
@@ -44,6 +41,10 @@ struct LabelContent: View {
                 HeartView(delay: 0.4)
             }
         } else {
+            // TODO: based on isSuccess binding var, change
+//            Image(systemName: "checkmark.circle.fill")
+//                .foregroundColor(.green)
+//                .transition(.opacity)
             Label(text, systemImage: systemImage)
         }
     }
@@ -55,7 +56,7 @@ struct HeartView: View {
     
     var body: some View {
         Image(systemName: "heart.fill")
-            .foregroundColor(.red)
+            .foregroundColor(.pink)
             .scaleEffect(scale)
             .animation(
                 Animation.easeInOut(duration: 0.6)

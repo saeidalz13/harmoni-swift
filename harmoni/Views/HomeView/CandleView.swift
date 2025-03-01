@@ -29,7 +29,7 @@ struct CandleView: View {
 
             // Flame
             Ellipse()
-                .fill(Color.orange)
+                .fill(Color.yellow)
                 .frame(width: horizontalFlameOffset, height: verticalFlameOffset)
                 .offset(y: -70)
                 .onAppear {
@@ -76,38 +76,8 @@ struct BondPopoverView: View {
             if let bondTitle, let bondId {
                 Text("Title: \(bondTitle)")
                     .font(.headline)
-                
-                HStack {
-                    Text("Copy Bond ID")
-                        .font(.callout)
-                    Button {
-                        UIPasteboard.general.string = bondId
-                        copied = true
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            copied = false
-                        }
-                    } label: {
-                        Image(systemName: copied ? "checkmark.circle.fill" : "doc.on.doc")
-                            .foregroundColor(copied ? .green : .blue)
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                }
-                
+
                 Divider()
-                
-                if localUserViewModel.localUser!.partnerId == nil {
-                    TextField("Partner ID", text: $bondIdToJoin)
-                        .padding(5)
-                        .background(Color(.systemGray.withAlphaComponent(0.1)))
-                        .cornerRadius(10)
-                    
-                    Button {
-                        // Merge
-                    } label: {
-                        RomanticLabelView(isLoading: $isLoading, systemImage: "heart.fill", text: "Merge")
-                    }
-                    .padding(.bottom, 10)
-                }
             
                 TextField("New Title", text: $newBondTitle)
                     .padding(5)

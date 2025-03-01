@@ -41,20 +41,19 @@ struct MainView: View {
                         }
                         .tag(TabSelection.home.rawValue)
                     
-                    Label("Lightning", systemImage: "bolt.fill")
+                    RelationshipView()
                         .tabItem {
                             Label("Relationship", systemImage: "heart.fill")
-                            
                         }
                         .tag(TabSelection.relationship.rawValue)
                     
-                    Label("Lightning", systemImage: "bolt.fill")
+                    FinanceView()
                         .tabItem {
                             Label("Finance", systemImage: "dollarsign.ring")
                         }
                         .tag(TabSelection.finance.rawValue)
                     
-                    Label("Lightning", systemImage: "bolt.fill")
+                    UpkeepView()
                         .tabItem {
                             Label("Upkeep", systemImage: "basket.fill")
                         }
@@ -102,13 +101,13 @@ struct MainView: View {
         //
         switch selection {
         case TabSelection.home.rawValue:
-            gradientColors = [Color.pink.opacity(0.9), Color.maroon.opacity(0.2)]
+            gradientColors = [Color.purple.opacity(0.7), Color.purple.opacity(0.2)]
         case TabSelection.relationship.rawValue:
-            gradientColors = [Color.pink.opacity(0.9), Color.purple.opacity(0.7)]
+            gradientColors = [Color.pink.opacity(0.9), Color.purple.opacity(0.6)]
         case TabSelection.finance.rawValue:
-            gradientColors = [Color.orange.opacity(0.8), Color.yellow.opacity(0.6)]
+            gradientColors = [Color.orange.opacity(0.8), Color.yellow.opacity(0.5)]
         case TabSelection.upkeep.rawValue:
-            gradientColors = [Color.blue.opacity(0.8), Color.teal.opacity(0.6)]
+            gradientColors = [Color.green.opacity(0.8), Color.teal.opacity(0.6)]
         case TabSelection.settings.rawValue:
             gradientColors = [Color.blue.opacity(0.8), Color.teal.opacity(0.6)]
         default:

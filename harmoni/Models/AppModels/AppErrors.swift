@@ -45,8 +45,14 @@ enum DataSerializationError: Error, LocalizedError {
 
 enum ModelContextError: Error, LocalizedError {
     case nilContext
+    case notFound(modelName: String)
     
     var localizedDescription: String? {
-        return "Model context is nil."
+        switch self {
+        case .nilContext:
+            return "Model context is nil."
+        case .notFound(let modelName):
+            return "Model '\(modelName)' not found in context."
+        }
     }
 }

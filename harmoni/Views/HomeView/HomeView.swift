@@ -12,10 +12,13 @@ struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
     
     @State private var isEditingUserInfo = false
-    
+    @State var isLoading = false
+    @State var isLoadingRefresh = false
+    @State var copied = false
+    @State var serverErr: String?
+
     var body: some View {
-        VStack {
-            // Section of user and their partner and bond title
+        ScrollView {
             HStack{
                 if let lu = localUserViewModel.localUser {
                     UserProfileView(user: lu, isPartner: false)
@@ -30,24 +33,21 @@ struct HomeView: View {
                     
                 }
             }
-            .padding()
-            .padding(.top, 50)
+            .padding(.top, 65)
             
-            HStack {
-                Text("Relationship Health Check Section")
+            if let bondId = localUserViewModel.localUser!.bondId {
+                if localUserViewModel.localUser!.partnerId == nil {
+                    NewUserSuggestionsView()
+                } else {
+                    RelationshipSummaryView()
+                }
             }
             
-            HStack {
-                Text("Relationship Stuff Section")
-            }
-            
-            HStack {
-                Text("Finance Section")
-            }
+            // TODO: Move the view of create and join in candle view here
+           
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
-    
     
 }
 

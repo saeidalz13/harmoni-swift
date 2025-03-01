@@ -48,6 +48,18 @@ final class LocalUser: Identifiable {
         self.partnerLastName = partnerLastName
     }
     
+    static func fetchUser(by email: String, modelContext: ModelContext) throws -> LocalUser {
+        let  fd = FetchDescriptor<LocalUser>(
+            predicate: #Predicate { $0.email == email }
+        )
+        
+        guard let localUser = try modelContext.fetch(fd).first else {
+            throw ModelContextError.notFound(modelName: "LocalUser")
+        }
+        
+        return localUser
+    }
+    
     /// Fetch and update the user in SwiftData
     static func updatePersonalInfo(
         id: String,

@@ -46,7 +46,9 @@ struct harmoniApp: App {
                     GIDSignIn.sharedInstance.handle(url)
                 }
                 .onAppear {
-                    GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
+                    GIDSignIn.sharedInstance.restorePreviousSignIn {
+                        user,
+                        error in
                         if let error {
                             print("Could not restore google user sign in: \(error.localizedDescription)")
                             return
@@ -71,21 +73,11 @@ struct harmoniApp: App {
                         guard let profile = user.profile else { return }
                         let email = profile.email
                         
-                        let fd = FetchDescriptor<LocalUser>(
-                            predicate: #Predicate { $0.email == email }
-                        )
-                        
                         do {
-                            if let localUser = try container.mainContext.fetch(fd).first {
-                                self.localUserViewModel.localUser = localUser
-                            } else {
-                                print("no user on appear")
-//                                guard let idToken = user.idToken else {
-//                                    print("No id token was found in Google payload")
-//                                    return
-//                                }
-//                                try await authViewModel.authenticateBackend(idToken: idToken.tokenString)
-                            }
+                            self.localUserViewModel.localUser = try LocalUser.fetchUser(
+                                by: email,
+                                modelContext: container.mainContext
+                            )
                             
                         } catch {
                             print("error in finding user from db: \(error)")

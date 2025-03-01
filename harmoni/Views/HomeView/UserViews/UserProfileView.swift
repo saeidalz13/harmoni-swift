@@ -53,7 +53,7 @@ struct UserProfileView: View {
                     } else {
                         PartnerProfileView(user: lu)
                             .padding()
-                            .frame(maxHeight: 300, alignment: .center)
+                            .frame(alignment: .center)
                     }
                 }
                 .presentationCompactAdaptation(.popover)
