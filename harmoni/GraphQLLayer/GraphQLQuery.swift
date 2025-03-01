@@ -46,7 +46,11 @@ enum GraphQLQuery {
                 lastName 
                 bondTitle 
                 bondId
+                bondCreatedAt
                 partnerId
+                partnerEmail
+                partnerFirstName
+                partnerLastName
             }
             accessToken
             refreshToken
@@ -82,6 +86,7 @@ enum GraphQLQuery {
             returnField = """
             bondId
             bondTitle
+            bondCreatedAt
             partnerId
             partnerEmail
             partnerFirstName

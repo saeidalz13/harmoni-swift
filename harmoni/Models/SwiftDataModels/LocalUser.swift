@@ -17,8 +17,10 @@ final class LocalUser: Identifiable {
     @Attribute(.unique) var email: String
     var firstName: String?
     var lastName: String?
-    var bondId: String?
-    var bondTitle: String?
+    
+    @Relationship(deleteRule: .cascade)
+    var bond: BondModel?
+
     var partnerId: String?
     var partnerEmail: String?
     var partnerFirstName: String?
@@ -29,8 +31,7 @@ final class LocalUser: Identifiable {
         email: String,
         firstName: String? = nil,
         lastName: String? = nil,
-        bondId: String? = nil,
-        bondTitle: String? = nil,
+        bond: BondModel? = nil,
         partnerId: String? = nil,
         partnerEmail: String? = nil,
         partnerFirstName: String? = nil,
@@ -40,8 +41,7 @@ final class LocalUser: Identifiable {
         self.firstName = firstName
         self.lastName = lastName
         self.email = email
-        self.bondId = bondId
-        self.bondTitle = bondTitle
+        self.bond = bond
         self.partnerId = partnerId
         self.partnerEmail = partnerEmail
         self.partnerFirstName = partnerFirstName
@@ -60,109 +60,99 @@ final class LocalUser: Identifiable {
         return localUser
     }
     
-    /// Fetch and update the user in SwiftData
-    static func updatePersonalInfo(
-        id: String,
-        email: String,
-        firstName: String,
-        lastName: String,
-        modelContext: ModelContext
-    ) throws {
-        let fetchDescriptor = FetchDescriptor<LocalUser>(
-            predicate: #Predicate { $0.id == id }
-        )
-
-        guard let existingUser = try modelContext.fetch(fetchDescriptor).first else {
-            throw NSError(domain: "UpdateUserError", code: 404, userInfo: [NSLocalizedDescriptionKey: "User not found"])
-        }
-
-        existingUser.email = email
-        existingUser.firstName = firstName
-        existingUser.lastName = lastName
-
-        try modelContext.save()
-    }
+//    static func updatePersonalInfo(
+//        id: String,
+//        email: String,
+//        firstName: String,
+//        lastName: String,
+//        modelContext: ModelContext
+//    ) throws {
+//        let fetchDescriptor = FetchDescriptor<LocalUser>(
+//            predicate: #Predicate { $0.id == id }
+//        )
+//        
+//        guard let existingUser = try modelContext.fetch(fetchDescriptor).first else {
+//            throw NSError(domain: "UpdateUserError", code: 404, userInfo: [NSLocalizedDescriptionKey: "User not found"])
+//        }
+//        
+//        existingUser.email = email
+//        existingUser.firstName = firstName
+//        existingUser.lastName = lastName
+//        
+//        try modelContext.save()
+//    }
     
-    static func saveNew(user: User, modelContext: ModelContext) throws -> LocalUser {
-        let localUser = LocalUser.init(
-            id: user.id,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            bondId: user.bondId,
-            bondTitle: user.bondTitle,
-            partnerId: user.partnerId,
-            partnerEmail: user.partnerEmail,
-            partnerFirstName: user.partnerFirstName,
-            partnerLastName: user.partnerLastName
-        )
-
-        modelContext.insert(localUser)
-        try modelContext.save()
-        
-        return localUser
-    }
+//    static func updateBond(id: String, bondTitle: String, modelContext: ModelContext) throws {
+//        let fetchDescriptor = FetchDescriptor<LocalUser>(
+//            predicate: #Predicate { $0.id == id }
+//        )
+//        
+//        guard let existingUser = try modelContext.fetch(fetchDescriptor).first else {
+//            throw NSError(domain: "UpdateUserError", code: 404, userInfo: [NSLocalizedDescriptionKey: "User not found"])
+//        }
+//        
+//        existingUser.bond!.title = bondTitle
+//        
+//        try modelContext.save()
+//    }
     
-    static func updateBond(id: String, bondId: String, bondTitle: String, modelContext: ModelContext) throws {
-        let fetchDescriptor = FetchDescriptor<LocalUser>(
-            predicate: #Predicate { $0.id == id }
-        )
-
-        guard let existingUser = try modelContext.fetch(fetchDescriptor).first else {
-            throw NSError(domain: "UpdateUserError", code: 404, userInfo: [NSLocalizedDescriptionKey: "User not found"])
-        }
-        
-        existingUser.bondId = bondId
-        existingUser.bondTitle = bondTitle
-        
-        try modelContext.save()
-    }
+//    static func updatePartnerBond(id: String, joinBondPayload: JoinBondPayload, modelContext: ModelContext) throws {
+//        let fetchDescriptor = FetchDescriptor<LocalUser>(
+//            predicate: #Predicate { $0.id == id }
+//        )
+//        
+//        guard let existingUser = try modelContext.fetch(fetchDescriptor).first else {
+//            throw NSError(domain: "UpdateUserError", code: 404, userInfo: [NSLocalizedDescriptionKey: "User not found"])
+//        }
+//        
+//        existingUser.bondId = joinBondPayload.bondId
+//        existingUser.bondTitle = joinBondPayload.bondTitle
+//        existingUser.partnerId = joinBondPayload.partnerId
+//        existingUser.partnerEmail = joinBondPayload.partnerEmail
+//        existingUser.partnerFirstName = joinBondPayload.partnerFirstName
+//        existingUser.partnerLastName = joinBondPayload.partnerLastName
+//        
+//        try modelContext.save()
+//    }
     
-    static func updatePartnerBond(id: String, joinBondPayload: JoinBondPayload, modelContext: ModelContext) throws {
-        let fetchDescriptor = FetchDescriptor<LocalUser>(
-            predicate: #Predicate { $0.id == id }
-        )
-        
-        guard let existingUser = try modelContext.fetch(fetchDescriptor).first else {
-            throw NSError(domain: "UpdateUserError", code: 404, userInfo: [NSLocalizedDescriptionKey: "User not found"])
-        }
-        
-        existingUser.bondId = joinBondPayload.bondId
-        existingUser.bondTitle = joinBondPayload.bondTitle
-        existingUser.partnerId = joinBondPayload.partnerId
-        existingUser.partnerEmail = joinBondPayload.partnerEmail
-        existingUser.partnerFirstName = joinBondPayload.partnerFirstName
-        existingUser.partnerLastName = joinBondPayload.partnerLastName
-        
-        try modelContext.save()
-    }
+//    static func updatePartnerInfo(id: String, partnerInfoPayload: PartnerInfoPayload, modelContext: ModelContext) throws {
+//        let fetchDescriptor = FetchDescriptor<LocalUser>(
+//            predicate: #Predicate { $0.id == id }
+//        )
+//        
+//        guard let existingUser = try modelContext.fetch(fetchDescriptor).first else {
+//            throw NSError(domain: "UpdateUserError", code: 404, userInfo: [NSLocalizedDescriptionKey: "User not found"])
+//        }
+//        
+//        existingUser.partnerId = partnerInfoPayload.partnerId
+//        existingUser.partnerEmail = partnerInfoPayload.partnerEmail
+//        existingUser.partnerFirstName = partnerInfoPayload.partnerFirstName
+//        existingUser.partnerLastName = partnerInfoPayload.partnerLastName
+//        
+//        try modelContext.save()
+//    }
     
-    static func updatePartnerInfo(id: String, partnerInfoPayload: PartnerInfoPayload, modelContext: ModelContext) throws {
-        let fetchDescriptor = FetchDescriptor<LocalUser>(
-            predicate: #Predicate { $0.id == id }
-        )
-        
-        guard let existingUser = try modelContext.fetch(fetchDescriptor).first else {
-            throw NSError(domain: "UpdateUserError", code: 404, userInfo: [NSLocalizedDescriptionKey: "User not found"])
-        }
-        
-        existingUser.partnerId = partnerInfoPayload.partnerId
-        existingUser.partnerEmail = partnerInfoPayload.partnerEmail
-        existingUser.partnerFirstName = partnerInfoPayload.partnerFirstName
-        existingUser.partnerLastName = partnerInfoPayload.partnerLastName
-        
-        try modelContext.save()
-    }
-    
-    static func deleteUser(id: String, modelContext: ModelContext) throws {
-        let fetchDescriptor = FetchDescriptor<LocalUser>(
-            predicate: #Predicate { $0.id == id }
-        )
-        
-        guard let existingUser = try modelContext.fetch(fetchDescriptor).first else {
-            throw NSError(domain: "UpdateUserError", code: 404, userInfo: [NSLocalizedDescriptionKey: "User not found"])
-        }
-        
-        modelContext.delete(existingUser)
-        try modelContext.save()
-    }}
+//    static func deleteUser(id: String, modelContext: ModelContext) throws {
+//        let fetchDescriptor = FetchDescriptor<LocalUser>(
+//            predicate: #Predicate { $0.id == id }
+//        )
+//        
+//        guard let existingUser = try modelContext.fetch(fetchDescriptor).first else {
+//            throw NSError(domain: "UpdateUserError", code: 404, userInfo: [NSLocalizedDescriptionKey: "User not found"])
+//        }
+//        
+//        modelContext.delete(existingUser)
+//        try modelContext.save()
+//    }
+//    
+//    func setPartnerToNil(modelContext: ModelContext) throws {
+//        let existingUser = try fetchUserFromDisk(modelContext: modelContext)
+//        
+//        existingUser.partnerId = nil
+//        existingUser.partnerEmail = nil
+//        existingUser.partnerFirstName = nil
+//        existingUser.partnerLastName = nil
+//        
+//        try modelContext.save()
+//    }
+}

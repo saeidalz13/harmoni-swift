@@ -19,3 +19,7 @@ enum GraphQLError: Error {
  
     }
 }
+
+enum GraphQLErrorMessage: String {
+    case noPartner = "no partner has joined the bond yet"
+}

@@ -13,6 +13,7 @@ struct User: Codable {
     let lastName: String?
     let bondTitle: String?
     let bondId: String?
+    let bondCreatedAt: String?
     let partnerId: String?
     let partnerEmail: String?
     let partnerFirstName: String?

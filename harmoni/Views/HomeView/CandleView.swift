@@ -40,10 +40,7 @@ struct CandleView: View {
             showPopover = true
         }
         .popover(isPresented: $showPopover, attachmentAnchor: .point(.bottom), arrowEdge: .top) {
-            BondPopoverView(
-                bondId: localUserViewModel.localUser!.bondId,
-                bondTitle: localUserViewModel.localUser!.bondTitle
-            )
+            BondPopoverView()
                 .presentationCompactAdaptation(.popover)
                 .padding()
                 .frame(minWidth: 300, alignment: .center)
@@ -62,19 +59,14 @@ struct CandleView: View {
 }
 
 struct BondPopoverView: View {
-    // TODO: Ge† the bondID, if available show view, if not show a view that creates
-    var bondId: String?
-    var bondTitle: String?
     @State var newBondTitle = ""
-    @State var bondIdToJoin = ""
-    @State private var copied = false
     @State private var isLoading: Bool = false
     @Environment(LocalUserViewModel.self) private var localUserViewModel
     
     var body: some View {
         VStack(alignment: .center) {
-            if let bondTitle, let bondId {
-                Text("Title: \(bondTitle)")
+            if let bond = localUserViewModel.localUser!.bond {
+                Text("Title: \(bond.title)")
                     .font(.headline)
 
                 Divider()
@@ -101,37 +93,7 @@ struct BondPopoverView: View {
                 }
                 
             } else {
-            
-                TextField("New Bond Title", text: $newBondTitle)
-                    .padding(5)
-                    .background(Color(.systemGray.withAlphaComponent(0.1)))
-                    .cornerRadius(10)
-                
-                Button(action: {
-                    Task {
-                        try await localUserViewModel.createBond(bondTitle: newBondTitle)
-                    }
-                    
-                }) {
-                    RomanticLabelView(isLoading: $isLoading, systemImage: "plus.circle.fill", text: "Create")
-                }
-                .padding(.bottom, 10)
-
-                Divider()
-
-                TextField("Bond ID (from partner)", text: $bondIdToJoin)
-                    .padding(5)
-                    .background(Color(.systemGray.withAlphaComponent(0.1)))
-                    .cornerRadius(10)
-                
-                Button {
-                    Task {
-                        try await localUserViewModel.joinBond(bondId: bondIdToJoin)
-                    }
-                } label: {
-                    RomanticLabelView(isLoading: $isLoading, systemImage: "heart.fill", text: "Join")
-                }
-
+                Text("Build a bond first please!")
             }
         }
         

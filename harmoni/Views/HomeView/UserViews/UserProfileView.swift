@@ -38,7 +38,7 @@ struct UserProfileView: View {
         .frame(width: 80, height: 100)
         .padding()
         .background(Color.white.opacity(0.8))
-        .cornerRadius(10)
+        .cornerRadius(30)
         .shadow(radius: 20)
         .onTapGesture {
             showPopover = true

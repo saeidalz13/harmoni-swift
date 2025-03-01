@@ -39,7 +39,46 @@ final class LocalUserViewModel {
                 refreshToken: authPayload!.refreshToken
             )
             
-            self.localUser = try LocalUser.saveNew(user: authPayload!.user, modelContext: modelContext)
+            // Check if bond exists
+            var bond: BondModel?
+            let bondId = authPayload!.user.bondId
+            if let bi = bondId {
+                let fd = FetchDescriptor<BondModel>(
+                    predicate: #Predicate { $0.id == bi }
+                )
+                if let b = try modelContext.fetch(fd).first {
+                    bond = b
+                } else {
+                    if let bondId = authPayload?.user.bondId,
+                       let bondTitle = authPayload?.user.bondTitle,
+                       let bondCreatedAt = authPayload?.user.bondCreatedAt,
+                       !bondId.isEmpty, !bondTitle.isEmpty, !bondCreatedAt.isEmpty {
+                        
+                        bond = BondModel(
+                            id: bondId,
+                            title: bondTitle,
+                            createdAt: DateFormatter.HarmoniFormatter.date(from: bondCreatedAt) ?? Date()
+                        )
+                    }
+                }
+            }
+            
+            let lu = LocalUser.init(
+                id: authPayload!.user.id,
+                email: authPayload!.user.email,
+                firstName: authPayload!.user.firstName,
+                lastName: authPayload!.user.lastName,
+                bond: bond,
+                partnerId: authPayload!.user.partnerId,
+                partnerEmail: authPayload!.user.partnerEmail,
+                partnerFirstName: authPayload!.user.partnerFirstName,
+                partnerLastName: authPayload!.user.partnerLastName
+            )
+            
+            modelContext.insert(lu)
+            try modelContext.save()
+            
+            localUser = lu
             
         } catch {
             print("Authorization failed: \(error.localizedDescription)")
@@ -50,7 +89,7 @@ final class LocalUserViewModel {
     }
     
     func updateUser(email: String, firstName: String, lastName: String) async throws {
-        let gqlData = try await GraphQLManager.shared.execQuery(
+        let _ = try await GraphQLManager.shared.execQuery(
             query: GraphQLQuery.updateUser,
             input: UpdateUserInput.init(
                 email: email,
@@ -60,40 +99,36 @@ final class LocalUserViewModel {
             withBearer: true
         ) as UpdateUserResponse
         
-        self.localUser!.email = email
-        self.localUser!.firstName = firstName
-        self.localUser!.lastName = lastName
+        localUser!.email = email
+        localUser!.firstName = firstName
+        localUser!.lastName = lastName
         
-        try LocalUser.updatePersonalInfo(
-            id: gqlData.updateUser!.id,
-            email: email,
-            firstName: firstName,
-            lastName: lastName,
-            modelContext: modelContext
-        )
+        try modelContext.save()
     }
     
     func updateBond(bondTitle: String) async throws {
-        guard let bondId = localUser!.bondId else {
+        guard let bond = localUser!.bond else {
             throw GeneralError.optionalFieldUnavailable(fieldName: "bondId")
         }
         
         let gqlData = try await GraphQLManager.shared.execQuery(
             query: GraphQLQuery.updateBond,
-            input: UpdateBondInput(bondId: bondId, bondTitle: bondTitle),
+            input: UpdateBondInput(bondId: bond.id, bondTitle: bondTitle),
             withBearer: true
         ) as UpdateBondResponse
         
-        try LocalUser.updateBond(
-            id: localUser!.id,
-            bondId: gqlData.updateBond!.id,
-            bondTitle: bondTitle,
-            modelContext: modelContext
-        )
-        print(gqlData.updateBond!.createdAt)
+        guard let respBondTitle = gqlData.updateBond?.bondTitle else {
+            throw GraphQLError.unavailableData(queryName: "updateBond")
+        }
         
-        localUser!.bondTitle = bondTitle
-        localUser!.bondId = gqlData.updateBond!.id
+        //        try LocalUser.updateBond(
+        //            id: localUser!.id,
+        //            bondTitle: respBondTitle,
+        //            modelContext: modelContext
+        //        )
+        
+        localUser!.bond!.title = respBondTitle
+        try modelContext.save()
     }
     
     func createBond(bondTitle: String) async throws {
@@ -103,15 +138,20 @@ final class LocalUserViewModel {
             withBearer: true
         ) as CreateBondResponse
         
-        try LocalUser.updateBond(
-            id: localUser!.id,
-            bondId: gqlData.createBond!.id,
-            bondTitle: bondTitle,
-            modelContext: modelContext
+        guard let newBond = gqlData.createBond else {
+            throw GraphQLError.unavailableData(queryName: "createBond")
+        }
+        
+        let bond = BondModel(
+            id: newBond.id,
+            title: newBond.bondTitle,
+            createdAt: DateFormatter.HarmoniFormatter.date(from: newBond.createdAt) ?? Date()
         )
         
-        localUser!.bondTitle = bondTitle
-        localUser!.bondId = gqlData.createBond!.id
+        modelContext.insert(bond)
+        localUser!.bond = bond
+        
+        try modelContext.save()
     }
     
     func joinBond(bondId: String) async throws {
@@ -121,47 +161,61 @@ final class LocalUserViewModel {
             withBearer: true
         ) as JoinBondResponse
         
-        let joinBondPayload = gqlData.joinBond!
+        guard let joinBondPayload = gqlData.joinBond else {
+            throw GraphQLError.unavailableData(queryName: "joinBond")
+        }
         
-        try LocalUser.updatePartnerBond(
-            id: localUser!.id,
-            joinBondPayload: joinBondPayload,
-            modelContext: modelContext
+        let bond = BondModel(
+            id: joinBondPayload.bondId,
+            title: joinBondPayload.bondTitle,
+            createdAt: DateFormatter.HarmoniFormatter.date(from: joinBondPayload.bondCreatedAt) ?? Date()
         )
         
-        localUser!.bondId = joinBondPayload.bondId
-        localUser!.bondTitle = joinBondPayload.bondTitle
+        localUser!.bond = bond
         localUser!.partnerId = joinBondPayload.partnerId
         localUser!.partnerEmail = joinBondPayload.partnerEmail
         localUser!.partnerFirstName = joinBondPayload.partnerFirstName
         localUser!.partnerLastName = joinBondPayload.partnerLastName
+        
+        try modelContext.save()
     }
     
     func getPartner() async throws {
-        guard let bondId = localUser!.bondId else {
+        guard let bond = localUser!.bond else {
             throw GeneralError.optionalFieldUnavailable(fieldName: "bondId")
         }
         
-        let gqlData = try await GraphQLManager.shared.execQuery(
-            query: GraphQLQuery.partnerInfo,
-            input: PartnerInfoInput(bondId: bondId),
-            type: .query,
-            withBearer: true
-        ) as PartnerInfoResponse
+        var gqlData: PartnerInfoResponse?
+        do {
+            gqlData = try await GraphQLManager.shared.execQuery(
+                query: GraphQLQuery.partnerInfo,
+                input: PartnerInfoInput(bondId: bond.id),
+                type: .query,
+                withBearer: true
+            ) as PartnerInfoResponse
+            
+        } catch GraphQLError.mutation(let errors) {
+            if errors.first?.message == GraphQLErrorMessage.noPartner.rawValue {
+                localUser!.partnerId = nil
+                localUser!.partnerEmail = nil
+                localUser!.partnerFirstName = nil
+                localUser!.partnerLastName = nil
+                try modelContext.save()
+            }
+            throw GraphQLError.mutation(error: errors)
+            
+        } catch {
+            throw error
+        }
         
-        
-        let partnerInfoPayload = gqlData.partnerInfo!
-        
-        try LocalUser.updatePartnerInfo(
-            id: localUser!.id,
-            partnerInfoPayload: partnerInfoPayload,
-            modelContext: modelContext
-        )
+        let partnerInfoPayload = gqlData!.partnerInfo!
         
         localUser!.partnerId = partnerInfoPayload.partnerId
         localUser!.partnerEmail = partnerInfoPayload.partnerEmail
         localUser!.partnerFirstName = partnerInfoPayload.partnerFirstName
         localUser!.partnerLastName = partnerInfoPayload.partnerLastName
+        
+        try modelContext.save()
     }
     
     func logOutBackend() async throws {
@@ -173,9 +227,9 @@ final class LocalUserViewModel {
             ) as LogOutInput
             
             // TODO: remove this
-//            try LocalUser.deleteUser(id: localUser!.id, modelContext: modelContext)
-//            print("deleted user")
-
+//            modelContext.delete(localUser!)
+//            try modelContext.save()
+            
         } catch {
             print("Failed to delete refresh token from backend: \(error)")
         }

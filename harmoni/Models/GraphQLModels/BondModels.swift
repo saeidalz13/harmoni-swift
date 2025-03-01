@@ -40,6 +40,7 @@ struct JoinBondInput: Codable {
 struct JoinBondPayload: Codable {
     let bondId: String
     let bondTitle: String
+    let bondCreatedAt: String
     let partnerId: String
     let partnerEmail: String
     let partnerFirstName: String?

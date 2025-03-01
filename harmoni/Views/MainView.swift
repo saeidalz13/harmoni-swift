@@ -22,13 +22,13 @@ struct MainView: View {
     @State private var isChatActive = false
     
     init() {
-        //        UITabBar.appearance().barTintColor = UIColor.clear
-        //        let scrollEdgeAppearance = UITabBarAppearance()
-        //        scrollEdgeAppearance.configureWithTransparentBackground()
-        //        UITabBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance
-        //        UITabBar.appearance().standardAppearance = scrollEdgeAppearance
-        //
-        UITabBar.appearance().unselectedItemTintColor = UIColor.black
+        let scrollEdgeAppearance = UITabBarAppearance()
+        scrollEdgeAppearance.configureWithDefaultBackground()
+        scrollEdgeAppearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterial)
+        scrollEdgeAppearance.backgroundColor = UIColor.clear
+//        UITabBar.appearance().unselectedItemTintColor = UIColor.black
+        UITabBar.appearance().standardAppearance = scrollEdgeAppearance
+        UITabBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance
     }
     
     var body: some View {

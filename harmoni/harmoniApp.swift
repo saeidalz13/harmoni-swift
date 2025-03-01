@@ -13,8 +13,6 @@ import GoogleSignIn
 @main
 struct harmoniApp: App {
     @State var localUserViewModel: LocalUserViewModel
-    @State var localUser: LocalUser?
-    
     var container: ModelContainer
 
     init() {
@@ -74,7 +72,7 @@ struct harmoniApp: App {
                         let email = profile.email
                         
                         do {
-                            self.localUserViewModel.localUser = try LocalUser.fetchUser(
+                            localUserViewModel.localUser = try LocalUser.fetchUser(
                                 by: email,
                                 modelContext: container.mainContext
                             )

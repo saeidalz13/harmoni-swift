@@ -19,32 +19,41 @@ struct HomeView: View {
 
     var body: some View {
         ScrollView {
-            HStack{
-                if let lu = localUserViewModel.localUser {
-                    UserProfileView(user: lu, isPartner: false)
+
+            if let lu = localUserViewModel.localUser {
+                if let bond = lu.bond {
                     
-                    VStack {
-                        CandleView(text: lu.bondTitle ?? "No Bond Yet")
+                    HStack{
+                        if let lu = localUserViewModel.localUser {
+                            UserProfileView(user: lu, isPartner: false)
+                            
+                            VStack {
+                                CandleView(text: lu.bond?.title ?? "No Bond Yet")
+                            }
+                            .padding()
+                            .padding(.top, 15)
+                            
+                            UserProfileView(user: lu, isPartner: true)
+                            
+                        }
                     }
-                    .padding()
-                    .padding(.top, 15)
+                    .padding(.top, 65)
                     
-                    UserProfileView(user: lu, isPartner: true)
                     
-                }
-            }
-            .padding(.top, 65)
-            
-            if let bondId = localUserViewModel.localUser!.bondId {
-                if localUserViewModel.localUser!.partnerId == nil {
-                    NewUserSuggestionsView()
+                    if lu.partnerId == nil {
+                        NewUserSuggestionsView(bondId: bond.id)
+                    } else {
+                        // View when user has both Bond and Partner
+                        
+                        RelationshipSummaryView()
+                    }
+                    
                 } else {
-                    RelationshipSummaryView()
+                    BrandNewUserHomeView()
                 }
+                
             }
-            
-            // TODO: Move the view of create and join in candle view here
-           
+            Spacer(minLength: 120)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
