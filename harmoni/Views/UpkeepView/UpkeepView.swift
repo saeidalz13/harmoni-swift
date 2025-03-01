@@ -26,7 +26,6 @@ struct UpkeepView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        
         .task {
             do {
                 upkeepVars = try await fetchUpkeep()
@@ -34,7 +33,7 @@ struct UpkeepView: View {
                 //
             }
         }
-        .animation(.easeInOut, value: upkeepVars)
+        .animation(.default, value: upkeepVars)
     }
     
     func fetchUpkeep() async throws -> [String] {

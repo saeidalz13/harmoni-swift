@@ -65,9 +65,9 @@ struct PartnerProfileView: View {
                     } label: {
                         RomanticLabelView(
                             isLoading: $isLoadingRefresh,
-                            systemImage: "arrow.trianglehead.2.clockwise",
                             text: "Refresh",
-                            color: Color.gray
+                            systemImage: "arrow.trianglehead.2.clockwise",
+                            linearGradient: LinearGradient(gradient: Gradient(colors: [Color.gray]), startPoint: .leading, endPoint: .trailing)
                         )
                         
                     }

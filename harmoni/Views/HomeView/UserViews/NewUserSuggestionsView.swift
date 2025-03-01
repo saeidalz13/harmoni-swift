@@ -81,9 +81,9 @@ struct NewUserSuggestionsView: View {
                 } label: {
                     RomanticLabelView(
                         isLoading: $isLoadingRefresh,
-                        systemImage: "arrow.trianglehead.2.clockwise",
                         text: "Refresh",
-                        color: Color.gray
+                        systemImage: "arrow.trianglehead.2.clockwise",
+                        linearGradient: LinearGradient(colors: [.gray, .white], startPoint: .leading, endPoint: .trailing)
                     )
                     
                 }

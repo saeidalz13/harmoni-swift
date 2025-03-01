@@ -18,63 +18,69 @@ enum TabSelection: Int8 {
 
 
 struct MainView: View {
+    @Environment(AuthViewModel.self) private var authViewModel
     @State private var selection: Int8 = TabSelection.home.rawValue
-    @State private var isChatActive = false
+//    @State private var isChatActive = false
     
     init() {
         let scrollEdgeAppearance = UITabBarAppearance()
-        scrollEdgeAppearance.configureWithDefaultBackground()
+//        scrollEdgeAppearance.configureWithDefaultBackground()
         scrollEdgeAppearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterial)
         scrollEdgeAppearance.backgroundColor = UIColor.clear
         UITabBar.appearance().standardAppearance = scrollEdgeAppearance
         UITabBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance
-        
-        
         // UITabBar.appearance().unselectedItemTintColor = UIColor.black
     }
     
     var body: some View {
         ZStack {
-            TabView(selection: $selection) {
-                Group {
-                    HomeView()
-                        .tabItem {
-                            Label("Home", systemImage: "house.fill")
-                        }
-                        .tag(TabSelection.home.rawValue)
+            if authViewModel.isHarmoniFirstTimeUser {
+                FirstTimeUserHomeView()
+                
+            } else {
+                TabView(selection: $selection) {
+                    Group {
+                        HomeView()
+                            .tabItem {
+                                Label("Home", systemImage: "house.fill")
+                            }
+                            .tag(TabSelection.home.rawValue)
+                        
+                        RelationshipView()
+                            .tabItem {
+                                Label("Relationship", systemImage: "heart.fill")
+                            }
+                            .tag(TabSelection.relationship.rawValue)
+                        
+                        FinanceView()
+                            .tabItem {
+                                Label("Finance", systemImage: "dollarsign.ring")
+                            }
+                            .tag(TabSelection.finance.rawValue)
+                        
+                        UpkeepView()
+                            .tabItem {
+                                Label("Upkeep", systemImage: "basket.fill")
+                            }
+                            .tag(TabSelection.upkeep.rawValue)
+                        
+                        SettingsView()
+                            .tabItem {
+                                Label("Settings", systemImage: "slider.horizontal.2.square")
+                            }
+                            .tag(TabSelection.settings.rawValue)
+                    }
+                    .padding(.top, 60)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(backgroundView())
+                    .ignoresSafeArea()
                     
-                    RelationshipView()
-                        .tabItem {
-                            Label("Relationship", systemImage: "heart.fill")
-                        }
-                        .tag(TabSelection.relationship.rawValue)
-                    
-                    FinanceView()
-                        .tabItem {
-                            Label("Finance", systemImage: "dollarsign.ring")
-                        }
-                        .tag(TabSelection.finance.rawValue)
-                    
-                    UpkeepView()
-                        .tabItem {
-                            Label("Upkeep", systemImage: "basket.fill")
-                        }
-                        .tag(TabSelection.upkeep.rawValue)
-                    
-                    SettingsView()
-                        .tabItem {
-                            Label("Settings", systemImage: "slider.horizontal.2.square")
-                        }
-                        .tag(TabSelection.settings.rawValue)
                 }
-              .padding(.top, 60)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(backgroundView())
-                .ignoresSafeArea()
+                .tint(Color.maroon)
+                .background(.red)
                 
             }
-            .tint(Color.maroon)
-            .background(.red)
+            
         }
     }
     

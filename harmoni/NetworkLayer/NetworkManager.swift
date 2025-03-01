@@ -7,55 +7,6 @@
 
 import Foundation
 
-
-//class AuthorizationInterceptor: ApolloInterceptor {
-//    public var id: String = UUID().uuidString
-//    
-//    func interceptAsync<Operation>(
-//        chain: any Apollo.RequestChain,
-//        request: Apollo.HTTPRequest<Operation>,
-//        response: Apollo.HTTPResponse<Operation>?,
-//        completion: @escaping (Result<Apollo.GraphQLResult<Operation.Data>, any Error>) -> Void
-//    ) where Operation : ApolloAPI.GraphQLOperation {
-//        print(Operation.operationName)
-//        
-//        guard let accessToken = KeychainManager.shared.retrieveFromKeychain(key: KeychainTokenKey.accessToken.rawValue) else {
-//            completion(.failure(SecurityError.unavailableToken))
-//            return
-//        }
-//        
-//        request.addHeader(name: "Authorization", value: "Bearer \(accessToken)")
-//        
-//        chain.proceedAsync(
-//            request: request,
-//            response: response,
-//            interceptor: self,
-//            completion: completion
-//        )
-//    }
-//}
-//
-//class NetworkInterceptorProvider: DefaultInterceptorProvider {
-//    override func interceptors<Operation>(for operation: Operation) -> [ApolloInterceptor] where Operation : GraphQLOperation {
-//        var interceptors = super.interceptors(for: operation)
-//        interceptors.insert(AuthorizationInterceptor(), at: 0)
-//        return interceptors
-//    }
-//}
-
-//    static let shared = NetworkManager()
-//
-//    private(set) lazy var apollo: ApolloClient = {
-//        let client = URLSessionClient()
-//        let cache = InMemoryNormalizedCache()
-//        let store = ApolloStore(cache: cache)
-//        let provider = NetworkInterceptorProvider(client: client, store: store)
-//        let transport = RequestChainNetworkTransport(interceptorProvider: provider, endpointURL: ServerEndpoint.graphQL.url)
-//
-//        return ApolloClient(networkTransport: transport, store: store)
-//    }()
-//
-
 final class NetworkManager: Sendable {
     static let shared = NetworkManager()
     private init() {}
@@ -143,3 +94,53 @@ final class NetworkManager: Sendable {
 //    }
 
 }
+
+
+
+//class AuthorizationInterceptor: ApolloInterceptor {
+//    public var id: String = UUID().uuidString
+//
+//    func interceptAsync<Operation>(
+//        chain: any Apollo.RequestChain,
+//        request: Apollo.HTTPRequest<Operation>,
+//        response: Apollo.HTTPResponse<Operation>?,
+//        completion: @escaping (Result<Apollo.GraphQLResult<Operation.Data>, any Error>) -> Void
+//    ) where Operation : ApolloAPI.GraphQLOperation {
+//        print(Operation.operationName)
+//
+//        guard let accessToken = KeychainManager.shared.retrieveFromKeychain(key: KeychainTokenKey.accessToken.rawValue) else {
+//            completion(.failure(SecurityError.unavailableToken))
+//            return
+//        }
+//
+//        request.addHeader(name: "Authorization", value: "Bearer \(accessToken)")
+//
+//        chain.proceedAsync(
+//            request: request,
+//            response: response,
+//            interceptor: self,
+//            completion: completion
+//        )
+//    }
+//}
+//
+//class NetworkInterceptorProvider: DefaultInterceptorProvider {
+//    override func interceptors<Operation>(for operation: Operation) -> [ApolloInterceptor] where Operation : GraphQLOperation {
+//        var interceptors = super.interceptors(for: operation)
+//        interceptors.insert(AuthorizationInterceptor(), at: 0)
+//        return interceptors
+//    }
+//}
+
+//    static let shared = NetworkManager()
+//
+//    private(set) lazy var apollo: ApolloClient = {
+//        let client = URLSessionClient()
+//        let cache = InMemoryNormalizedCache()
+//        let store = ApolloStore(cache: cache)
+//        let provider = NetworkInterceptorProvider(client: client, store: store)
+//        let transport = RequestChainNetworkTransport(interceptorProvider: provider, endpointURL: ServerEndpoint.graphQL.url)
+//
+//        return ApolloClient(networkTransport: transport, store: store)
+//    }()
+//

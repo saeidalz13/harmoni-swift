@@ -46,13 +46,20 @@ struct HomeView: View {
                     }
                     
                 } else {
-                    BrandNewUserHomeView()
+                    FirstTimeUserHomeView()
                 }
                 
             }
             Spacer(minLength: 120)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .task {
+            do {
+                
+            } catch {
+                
+            }
+        }
     }
     
 }

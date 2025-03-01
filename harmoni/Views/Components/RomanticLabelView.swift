@@ -9,21 +9,32 @@ import SwiftUI
 struct RomanticLabelView: View {
     // TODO: Add a success binding variable to this
     @Binding var isLoading: Bool
-    var systemImage: String?
     var text: String
-    var color: Color = Color.pink.opacity(0.9)
+    
+    var systemImage: String?
+    var linearGradient: LinearGradient = LinearGradient(
+        colors: [.pink],
+        startPoint: .leading,
+        endPoint: .trailing
+    )
+    var verticalPadding: CGFloat = 10
+    var horizontalPadding: CGFloat = 20
+    var cornerRadius: CGFloat = 20
+    var shadowColor: Color = .pink.opacity(0.15)
+    
+    let loadingLG = LinearGradient(colors: [.black], startPoint: .leading, endPoint: .trailing)
     
     var body: some View {
         LabelContent(isLoading: isLoading, text: text, systemImage: systemImage ?? "")
             .font(.subheadline)
             .fontWeight(.semibold)
-            .padding(.vertical, 10)
-            .padding(.horizontal, 20)
-            .background(isLoading ? .black : color)
+            .padding(.vertical, verticalPadding)
+            .padding(.horizontal, horizontalPadding)
+            .background(isLoading ? loadingLG : linearGradient)
             .foregroundColor(.white)
-            .cornerRadius(20)
-            .shadow(color: .pink.opacity(0.15), radius: 8, x: 0, y: 6)
-            .opacity(isLoading ? 0.8 : 1.0)
+            .cornerRadius(cornerRadius)
+            .shadow(color: shadowColor, radius: 8, x: 0, y: 6)
+            .opacity(isLoading ? 0.7 : 1.0)
             .animation(.easeInOut, value: isLoading)
     }
 }

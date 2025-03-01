@@ -44,6 +44,7 @@ struct harmoniApp: App {
         WindowGroup {
             ContentView()
                 .environment(localUserViewModel)
+                .environment(authViewModel)
                 .modelContainer(container)
                 .onOpenURL { url in
                     GIDSignIn.sharedInstance.handle(url)

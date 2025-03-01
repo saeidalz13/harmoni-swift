@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct BrandNewUserHomeView: View {
+struct FirstTimeUserHomeView: View {
     @Environment(LocalUserViewModel.self) private var localUserViewModel
     @State private var newBondTitle = ""
     @State private var bondIdToJoin = ""
@@ -31,7 +31,11 @@ struct BrandNewUserHomeView: View {
                         }
                         
                     }) {
-                        RomanticLabelView(isLoading: $isLoading, systemImage: "plus.circle.fill", text: "Create")
+                        RomanticLabelView(
+                            isLoading: $isLoading,
+                            text: "Create",
+                            systemImage: "plus.circle.fill"
+                        )
                     }
                     .padding(.bottom, 10)
                     
@@ -47,13 +51,17 @@ struct BrandNewUserHomeView: View {
                             try await localUserViewModel.joinBond(bondId: bondIdToJoin)
                         }
                     } label: {
-                        RomanticLabelView(isLoading: $isLoading, systemImage: "heart.fill", text: "Join")
+                        RomanticLabelView(
+                            isLoading: $isLoading,
+                            text: "Join",
+                            systemImage: "heart.fill"
+                        )
                     }
                 }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-//        .padding(.top, 30)
+        //        .padding(.top, 30)
         .background(backgroundView())
         .ignoresSafeArea()
     }
@@ -137,21 +145,20 @@ struct RomanticIntroView: View {
                 .lineSpacing(6)
             }
             
-            // Subtle animation
-            //            HStack(spacing: 5) {
-            //                ForEach(0..<3) { i in
-            //                    Circle()
-            //                        .fill(Color.pink.opacity(0.7))
-            //                        .frame(width: 8, height: 8)
-            //                        .scaleEffect(1 + 0.3 * sin(Double(i) * 0.5 + Date().timeIntervalSince1970))
-            //                        .animation(
-            //                            Animation.easeInOut(duration: 1.5)
-            //                                .repeatForever()
-            //                                .delay(Double(i) * 0.2),
-            //                            value: Date().timeIntervalSince1970
-            //                        )
-            //                }
-            //            }
+            HStack(spacing: 5) {
+                ForEach(0..<3) { i in
+                    Circle()
+                        .fill(Color.pink.opacity(0.7))
+                        .frame(width: 8, height: 8)
+                        .scaleEffect(1 + 0.3 * sin(Double(i) * 0.5 + Date().timeIntervalSince1970))
+                        .animation(
+                            Animation.easeInOut(duration: 1.5)
+                                .repeatForever()
+                                .delay(Double(i) * 0.2),
+                            value: Date().timeIntervalSince1970
+                        )
+                }
+            }
         }
         .padding(20)
         .background(

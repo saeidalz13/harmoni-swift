@@ -44,7 +44,7 @@ struct UpdateUserView: View {
                         await updateUser()
                     }
                 } label: {
-                    RomanticLabelView(isLoading: $isLoading, systemImage: "list.bullet.clipboard.fill", text: "Update")
+                    RomanticLabelView(isLoading: $isLoading,  text: "Update", systemImage: "list.bullet.clipboard.fill")
                 }
                 .disabled(isLoading)
             }

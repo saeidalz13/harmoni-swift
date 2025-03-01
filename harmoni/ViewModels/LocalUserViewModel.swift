@@ -218,25 +218,30 @@ final class LocalUserViewModel {
     }
     
     func logOutBackend() async throws {
-        do {
-            let _ = try await GraphQLManager.shared.execQuery(
-                query: GraphQLQuery.logOut,
-                input: UserIdResponse.init(id: localUser!.id),
-                withBearer: true
-            ) as LogOutInput
-            
-            // TODO: remove this
-            modelContext.delete(localUser!)
-            try modelContext.save()
-            
-        } catch {
-            print("Failed to delete refresh token from backend: \(error)")
-        }
-        
         KeychainManager.shared.removeTokensFromKeychain()
         GIDSignIn.sharedInstance.signOut()
-        localUser = nil
+        
+        //        do {
+        //            let _ = try await GraphQLManager.shared.execQuery(
+        //                query: GraphQLQuery.logOut,
+        //                input: UserIdResponse.init(id: localUser!.id),
+        //                withBearer: true
+        //            ) as LogOutInput
+        //
+        //            // TODO: remove this
+        //            if let lu = localUser {
+        //                modelContext.delete(lu)
+        //                try modelContext.save()
+        //            }
+        
+        //        } catch {
+        //            print("Failed to delete refresh token from backend: \(error)")
+        //        }
+        //
+        //        KeychainManager.shared.removeTokensFromKeychain()
+        //        GIDSignIn.sharedInstance.signOut()
+        //        localUser = nil
+        //    }
     }
-    
 }
 
