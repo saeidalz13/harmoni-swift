@@ -20,13 +20,13 @@ struct CandleView: View {
                 .fill(Color.white.opacity(0.8))
                 .frame(width: 100, height: 120)
                 .shadow(color: .orange, radius: 10)
-
+            
             Text(text)
                 .font(.caption)
                 .fontWeight(.semibold)
                 .foregroundColor(.black)
                 .multilineTextAlignment(.center)
-
+            
             // Flame
             Ellipse()
                 .fill(Color.yellow)
@@ -63,38 +63,42 @@ struct BondPopoverView: View {
     @State private var isLoading: Bool = false
     @Environment(LocalUserViewModel.self) private var localUserViewModel
     
+    var bond: BondModel {
+        guard let user = localUserViewModel.localUser, let bond = user.bond else {
+            return BondModel(id: "", title: "", createdAt: Date())
+        }
+        
+        return bond
+    }
+    
     var body: some View {
         VStack(alignment: .center) {
-            if let bond = localUserViewModel.localUser!.bond {
-                Text("Title: \(bond.title)")
-                    .font(.headline)
-
-                Divider()
+            Text("Title: \(bond.title)")
+                .font(.headline)
             
-                TextField("New Title", text: $newBondTitle)
-                    .padding(5)
-                    .background(Color(.systemGray.withAlphaComponent(0.1)))
-                    .cornerRadius(10)
-                
-                Button {
-                    Task {
-                        isLoading = true
-                        
-                        do {
-                            try await localUserViewModel.updateBond(bondTitle: newBondTitle)
-                        } catch {
-                            print(error.localizedDescription)
-                        }
-                        
-                        isLoading = false
+            Divider()
+            
+            TextField("New Title", text: $newBondTitle)
+                .padding(5)
+                .background(Color(.systemGray.withAlphaComponent(0.1)))
+                .cornerRadius(10)
+            
+            Button {
+                Task {
+                    isLoading = true
+                    
+                    do {
+                        try await localUserViewModel.updateBond(bondTitle: newBondTitle)
+                    } catch {
+                        print(error.localizedDescription)
                     }
-                } label: {
-                    RomanticLabelView(isLoading: $isLoading, systemImage: "list.bullet.clipboard.fill", text: "Update")
+                    
+                    isLoading = false
                 }
-                
-            } else {
-                Text("Build a bond first please!")
+            } label: {
+                RomanticLabelView(isLoading: $isLoading, systemImage: "list.bullet.clipboard.fill", text: "Update")
             }
+            
         }
         
     }

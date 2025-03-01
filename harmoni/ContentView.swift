@@ -7,16 +7,17 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State var isAuth = false
     @Environment(LocalUserViewModel.self) private var localUserViewModel
     
     var body: some View {
         ZStack {
-            if localUserViewModel.localUser != nil {
-                MainView()
-                    .environment(localUserViewModel)
-            } else {
+            if localUserViewModel.localUser == nil {
                 AuthView()
-                    .environment(localUserViewModel)
+            } else if localUserViewModel.localUser?.bond == nil {
+                BrandNewUserHomeView()
+            } else {
+                MainView()
             }
         }
     }

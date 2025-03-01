@@ -11,7 +11,6 @@ struct FinanceView: View {
     var body: some View {
         ScrollView {
             Text("Finance View")
-                .padding(.top, 100)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }

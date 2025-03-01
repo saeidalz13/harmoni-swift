@@ -4,7 +4,6 @@
 //
 //  Created by Saeid Alizadeh on 2025-01-30.
 //
-import SwiftUI
 import SwiftData
 import GoogleSignIn
 
@@ -227,8 +226,8 @@ final class LocalUserViewModel {
             ) as LogOutInput
             
             // TODO: remove this
-//            modelContext.delete(localUser!)
-//            try modelContext.save()
+            modelContext.delete(localUser!)
+            try modelContext.save()
             
         } catch {
             print("Failed to delete refresh token from backend: \(error)")

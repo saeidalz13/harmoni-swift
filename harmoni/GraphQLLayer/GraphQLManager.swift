@@ -69,7 +69,7 @@ final class GraphQLManager: Sendable {
     }
     
     func renewAccessToken() async throws {
-        guard let refreshToken = KeychainManager.shared.retrieveFromKeychain(key: KeychainTokenKey.refreshToken.rawValue) else {
+        guard let refreshToken = KeychainManager.shared.retrieveFromKeychain(key: KeychainKey.refreshToken) else {
             throw SecurityError.unavailableToken
         }
         
@@ -109,11 +109,11 @@ final class GraphQLManager: Sendable {
             throw GraphQLError.unavailableData(queryName: "renewAcessToken")
         }
         
-        KeychainManager.shared.removeTokenByKey(key: KeychainTokenKey.accessToken.rawValue)
+        KeychainManager.shared.removeTokenByKey(key: KeychainKey.accessToken)
        
         try KeychainManager.shared.saveToKeychain(
             token: gqlData.renewAccessToken!.accessToken.trimmingCharacters(in: .whitespacesAndNewlines),
-            key: KeychainTokenKey.accessToken.rawValue
+            key: KeychainKey.accessToken
         )
     }
 }

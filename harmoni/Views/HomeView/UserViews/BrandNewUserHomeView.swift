@@ -14,43 +14,68 @@ struct BrandNewUserHomeView: View {
     @State private var isLoading = false
     
     var body: some View {
-        RomanticContainer {
-            RomanticIntroView()
-                .padding(.vertical)
-            
-            VStack {
-                TextField("New Bond Title", text: $newBondTitle)
-                    .padding(5)
-                    .background(Color(.systemGray.withAlphaComponent(0.1)))
-                    .cornerRadius(10)
+        ZStack {
+            RomanticContainer {
+                RomanticIntroView()
+                    .padding(.vertical)
                 
-                Button(action: {
-                    Task {
-                        try await localUserViewModel.createBond(bondTitle: newBondTitle)
-                    }
+                VStack {
+                    TextField("New Bond Title", text: $newBondTitle)
+                        .padding(5)
+                        .background(Color(.systemGray.withAlphaComponent(0.1)))
+                        .cornerRadius(10)
                     
-                }) {
-                    RomanticLabelView(isLoading: $isLoading, systemImage: "plus.circle.fill", text: "Create")
-                }
-                .padding(.bottom, 10)
-
-                Divider()
-
-                TextField("Bond ID (from partner)", text: $bondIdToJoin)
-                    .padding(5)
-                    .background(Color(.systemGray.withAlphaComponent(0.1)))
-                    .cornerRadius(10)
-                
-                Button {
-                    Task {
-                        try await localUserViewModel.joinBond(bondId: bondIdToJoin)
+                    Button(action: {
+                        Task {
+                            try await localUserViewModel.createBond(bondTitle: newBondTitle)
+                        }
+                        
+                    }) {
+                        RomanticLabelView(isLoading: $isLoading, systemImage: "plus.circle.fill", text: "Create")
                     }
-                } label: {
-                    RomanticLabelView(isLoading: $isLoading, systemImage: "heart.fill", text: "Join")
+                    .padding(.bottom, 10)
+                    
+                    Divider()
+                    
+                    TextField("Bond ID (from partner)", text: $bondIdToJoin)
+                        .padding(5)
+                        .background(Color(.systemGray.withAlphaComponent(0.1)))
+                        .cornerRadius(10)
+                    
+                    Button {
+                        Task {
+                            try await localUserViewModel.joinBond(bondId: bondIdToJoin)
+                        }
+                    } label: {
+                        RomanticLabelView(isLoading: $isLoading, systemImage: "heart.fill", text: "Join")
+                    }
                 }
             }
         }
-        .padding(.top, 65)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+//        .padding(.top, 30)
+        .background(backgroundView())
+        .ignoresSafeArea()
+    }
+    
+    private func backgroundView() -> some View {
+        let gradientColors = [Color.orange.opacity(0.8), Color.teal.opacity(0.6)]
+        return LinearGradient(gradient: Gradient(colors: gradientColors), startPoint: .top, endPoint: .bottom)
+            .overlay(heartOverlay())
+    }
+    
+    private func heartOverlay() -> some View {
+        ZStack {
+            ForEach(0..<10, id: \.self) { _ in
+                Image(systemName: "heart.fill")
+                    .foregroundColor(.white.opacity(0.2))
+                    .font(.system(size: CGFloat.random(in: 50...150)))
+                    .position(
+                        x: CGFloat.random(in: 50...UIScreen.main.bounds.width - 50),
+                        y: CGFloat.random(in: 100...UIScreen.main.bounds.height - 100)
+                    )
+            }
+        }
     }
 }
 
@@ -113,20 +138,20 @@ struct RomanticIntroView: View {
             }
             
             // Subtle animation
-//            HStack(spacing: 5) {
-//                ForEach(0..<3) { i in
-//                    Circle()
-//                        .fill(Color.pink.opacity(0.7))
-//                        .frame(width: 8, height: 8)
-//                        .scaleEffect(1 + 0.3 * sin(Double(i) * 0.5 + Date().timeIntervalSince1970))
-//                        .animation(
-//                            Animation.easeInOut(duration: 1.5)
-//                                .repeatForever()
-//                                .delay(Double(i) * 0.2),
-//                            value: Date().timeIntervalSince1970
-//                        )
-//                }
-//            }
+            //            HStack(spacing: 5) {
+            //                ForEach(0..<3) { i in
+            //                    Circle()
+            //                        .fill(Color.pink.opacity(0.7))
+            //                        .frame(width: 8, height: 8)
+            //                        .scaleEffect(1 + 0.3 * sin(Double(i) * 0.5 + Date().timeIntervalSince1970))
+            //                        .animation(
+            //                            Animation.easeInOut(duration: 1.5)
+            //                                .repeatForever()
+            //                                .delay(Double(i) * 0.2),
+            //                            value: Date().timeIntervalSince1970
+            //                        )
+            //                }
+            //            }
         }
         .padding(20)
         .background(

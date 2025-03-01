@@ -11,7 +11,8 @@ import GoogleSignIn
 
 
 struct AuthView: View {
-    @Environment(LocalUserViewModel.self) private var authViewModel
+    @Environment(LocalUserViewModel.self) private var localUserViewModel
+    @Environment(AuthViewModel.self) private var authViewModel
     @State private var showAlert: Bool = false
     
     var body: some View {
@@ -42,6 +43,11 @@ struct AuthView: View {
         else {return}
         
         GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) { signInResult, error in
+            if let e = error {
+                print("Failed to sign in with Google: \(e.localizedDescription)")
+                return
+            }
+            
             guard let result = signInResult else {
                 print(error?.localizedDescription ?? "Failed to sign in with Google")
                 return
@@ -53,7 +59,7 @@ struct AuthView: View {
             }
             
             Task {
-                await authViewModel.authenticateBackend(idToken: idToken.tokenString)
+                await localUserViewModel.authenticateBackend(idToken: idToken.tokenString)
             }
 
         }

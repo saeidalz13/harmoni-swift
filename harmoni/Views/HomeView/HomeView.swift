@@ -19,7 +19,6 @@ struct HomeView: View {
 
     var body: some View {
         ScrollView {
-
             if let lu = localUserViewModel.localUser {
                 if let bond = lu.bond {
                     
@@ -37,8 +36,6 @@ struct HomeView: View {
                             
                         }
                     }
-                    .padding(.top, 65)
-                    
                     
                     if lu.partnerId == nil {
                         NewUserSuggestionsView(bondId: bond.id)

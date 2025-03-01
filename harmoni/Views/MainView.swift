@@ -26,9 +26,11 @@ struct MainView: View {
         scrollEdgeAppearance.configureWithDefaultBackground()
         scrollEdgeAppearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterial)
         scrollEdgeAppearance.backgroundColor = UIColor.clear
-//        UITabBar.appearance().unselectedItemTintColor = UIColor.black
         UITabBar.appearance().standardAppearance = scrollEdgeAppearance
         UITabBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance
+        
+        
+        // UITabBar.appearance().unselectedItemTintColor = UIColor.black
     }
     
     var body: some View {
@@ -65,33 +67,14 @@ struct MainView: View {
                         }
                         .tag(TabSelection.settings.rawValue)
                 }
+              .padding(.top, 60)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(backgroundView())
                 .ignoresSafeArea()
                 
-            }.tint(Color.maroon)
-            
-            VStack {
-                HStack {
-                    Button(action: {
-                        isChatActive.toggle()
-                    }) {
-                        Image(systemName: "message.fill")
-                            .foregroundStyle(Color.maroon)
-                            .font(.title)
-                    }
-                    .sheet(isPresented: $isChatActive) {
-                        ChatMenuView()
-                    }
-                    
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-                .padding(.trailing, 25)
-                .padding(.bottom, 5)
-                
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-            .padding(.bottom, 65)
-            .background(.clear)
+            .tint(Color.maroon)
+            .background(.red)
         }
     }
     
@@ -113,7 +96,7 @@ struct MainView: View {
         default:
             gradientColors = [Color.white, Color.gray]
         }
-
+        
         return LinearGradient(gradient: Gradient(colors: gradientColors), startPoint: .top, endPoint: .bottom)
             .overlay(heartOverlay())
     }
@@ -133,3 +116,26 @@ struct MainView: View {
         }
     }
 }
+            
+//            VStack {
+//                HStack {
+//                    Button(action: {
+//                        isChatActive.toggle()
+//                    }) {
+//                        Image(systemName: "message.fill")
+//                            .foregroundStyle(Color.maroon)
+//                            .font(.title)
+//                    }
+//                    .sheet(isPresented: $isChatActive) {
+//                        ChatMenuView()
+//                    }
+//                    
+//                }
+//                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+//                .padding(.trailing, 25)
+//                .padding(.bottom, 5)
+//                
+//            }
+//            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+//            .padding(.bottom, 65)
+//            .background(.clear)i

@@ -9,11 +9,35 @@ import SwiftUI
 
 
 struct UpkeepView: View {
+    @State var upkeepVars: [String] = []
+    
     var body: some View {
         ScrollView {
-            Text("Upkeep")
-                .padding(.top, 100)
+            if upkeepVars.isEmpty {
+                Text("Upkeep")
+            } else {
+                RomanticContainer {
+                    VStack {
+                        ForEach(upkeepVars, id: \.self) {
+                            Text($0)
+                        }
+                    }
+                }
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        
+        .task {
+            do {
+                upkeepVars = try await fetchUpkeep()
+            } catch {
+                //
+            }
+        }
+        .animation(.easeInOut, value: upkeepVars)
+    }
+    
+    func fetchUpkeep() async throws -> [String] {
+        return ["groceries", "others", "A"]
     }
 }

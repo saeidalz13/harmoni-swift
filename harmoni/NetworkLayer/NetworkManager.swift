@@ -63,7 +63,7 @@ final class NetworkManager: Sendable {
     func makeHTTPPostRequest(httpBody: Data? = nil, withBearer: Bool) async throws -> Data {
         var accessToken: String?
         if withBearer {
-            if let token = KeychainManager.shared.retrieveFromKeychain(key: KeychainTokenKey.accessToken.rawValue) {
+            if let token = KeychainManager.shared.retrieveFromKeychain(key: KeychainKey.accessToken) {
                 accessToken = token
             } else {
                 throw SecurityError.unavailableToken
