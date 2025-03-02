@@ -26,14 +26,13 @@ struct FirstTimeUserHomeView: View {
     // State variables for your pages
     @State private var firstName: String = ""
     @State private var lastName: String = ""
-    @State private var birthday: Date = Date()
-    @State private var newBondTitle: String = ""
-    @State private var bondIdToJoin: String = ""
+    @State private var birthDate: Date = Date()
     
     // Screen width for calculations
     private var screenWidth: CGFloat {
         UIScreen.main.bounds.width
     }
+    var firstTimeUserVM: FirstTimeUserViewModel = .init()
     
     init() {
         self.pages = []
@@ -47,15 +46,10 @@ struct FirstTimeUserHomeView: View {
                 PageTwoView(
                     firstName: $firstName,
                     lastName: $lastName,
-                    birthday: $birthday
+                    birthDate: $birthDate
                 )
             ),
-            PageContent(
-                PageThreeView(
-                    newBondTitle: $newBondTitle,
-                    bondIdToJoin: $bondIdToJoin
-                )
-            )
+            PageContent(PageThreeView(firstName: $firstName, lastName: $lastName, birthDate: $birthDate, firstTimeUserVM: firstTimeUserVM))
         ]
     }
     
@@ -245,7 +239,7 @@ struct PageOneView: View {
 struct PageTwoView: View {
     @Binding var firstName: String
     @Binding var lastName: String
-    @Binding var birthday: Date
+    @Binding var birthDate: Date
     
     var body: some View {
         VStack {
@@ -263,10 +257,10 @@ struct PageTwoView: View {
             )
             .padding(.bottom, 25)
             
-            RomanticCalendarView(fieldText: "Select Birthday", selectedDate: $birthday)
+            RomanticCalendarView(fieldText: "Select Birthday", selectedDate: $birthDate)
             
-            if birthday != Date.distantPast {
-                Text("Selected birthday: \(birthday, formatter: birthdayFormatter)")
+            if birthDate != Date.distantPast {
+                Text("Selected birthday: \(birthDate, formatter: birthdayFormatter)")
                     .padding()
                     .font(.avenirCaption)
             }
@@ -279,15 +273,26 @@ struct PageTwoView: View {
     }
     
     private var birthdayFormatter: DateFormatter {
-         let formatter = DateFormatter()
-         formatter.dateStyle = .long
-         return formatter
-     }
+        let formatter = DateFormatter()
+        formatter.dateStyle = .long
+        return formatter
+    }
 }
 
 struct PageThreeView: View {
-    @Binding var newBondTitle: String
-    @Binding var bondIdToJoin: String
+    @Binding var firstName: String
+    @Binding var lastName: String
+    @Binding var birthDate: Date
+    var firstTimeUserVM: FirstTimeUserViewModel
+    
+    @State private var newBondTitle = ""
+    @State private var bondIdToJoin = ""
+    @State private var isLoadingCreateBond = false
+    @State private var isSuccessCreateBond = false
+    @State private var isLoadingJoinBond = false
+    
+//    @Environment(FirstTimeUserViewModel.self) private var firstTimeUserVM
+    @Environment(AuthViewModel.self) private var authViewModel
     
     var body: some View {
         VStack {
@@ -299,36 +304,51 @@ struct PageThreeView: View {
                 fieldText: "Title of Your Bond",
                 buttonText: "Create Bond",
                 varToEdit: $newBondTitle,
+                isLoading: $isLoadingCreateBond,
                 systemImage: "plus.circle.fill"
             ) {
-                //                    Task {
-                //                        try await localUserViewModel.createBond(bondTitle: newBondTitle)
-                //                    }
+                Task {
+                    isLoadingCreateBond = true
+
+                    do {
+                        try await firstTimeUserVM.createBond(
+                            firstName: firstName,
+                            lastName: lastName,
+                            birthDate: DateFormatter.HarmoniFormatter.string(from: birthDate),
+                            bondTitle: newBondTitle
+                        )
+                        isLoadingCreateBond = false
+
+                        try authViewModel.markUserAsOnboarded()
+                    } catch {
+                        print(error)
+                    }
+                    
+                    isLoadingCreateBond = false
+                }
             }
             
             Text("OR")
                 .font(.avenirBold)
                 .padding(.vertical, 20)
-
             
             RomanticTextFieldWithButtonView(
                 fieldText: "Bond ID (from partner)",
                 buttonText: "Join",
                 varToEdit: $bondIdToJoin,
+                isLoading: $isLoadingJoinBond,
                 systemImage: "heart.fill"
             ) {
-                //                    Task {
-                //                        try await localUserViewModel.joinBond(bondId: bondIdToJoin)
-                //                    }
+                // TODO: joinBond
             }
-
+            
             
             Text("← Swipe to Go Back")
                 .font(.avenirCaption)
                 .italic()
                 .padding(.top, 80)
         }
-
+        
     }
 }
 
@@ -387,7 +407,7 @@ struct IntroPageThreeView: View {
 //        ZStack {
 //            // Paper texture background
 //            Color.white.opacity(0.9)
-//            
+//
 //            // Notebook line pattern
 //            VStack(spacing: 18) {
 //                ForEach(0..<30, id: \.self) { _ in
@@ -396,14 +416,14 @@ struct IntroPageThreeView: View {
 //                        .frame(height: 1)
 //                }
 //            }
-//            
+//
 //            // Left side binding
 //            HStack {
 //                ZStack {
 //                    Rectangle()
 //                        .fill(Color.brown.opacity(0.6))
 //                        .frame(width: 30)
-//                    
+//
 //                    VStack(spacing: 20) {
 //                        ForEach(0..<10, id: \.self) { _ in
 //                            Circle()
@@ -421,13 +441,13 @@ struct IntroPageThreeView: View {
 //
 //struct NotebookPageHeaderView: View {
 //    let title: String
-//    
+//
 //    var body: some View {
 //        VStack(spacing: 8) {
 //            Text(title)
 //                .font(.custom("Noteworthy-Bold", size: 28))
 //                .foregroundColor(.primary.opacity(0.8))
-//            
+//
 //            // Decorative underline
 //            Rectangle()
 //                .fill(
@@ -447,19 +467,19 @@ struct IntroPageThreeView: View {
 //struct NotebookSectionView<Content: View>: View {
 //    let title: String
 //    let content: Content
-//    
+//
 //    init(title: String, @ViewBuilder content: () -> Content) {
 //        self.title = title
 //        self.content = content()
 //    }
-//    
+//
 //    var body: some View {
 //        VStack(alignment: .leading, spacing: 10) {
 //            Text(title)
 //                .font(.custom("Noteworthy-Bold", size: 20))
 //                .foregroundColor(.primary.opacity(0.8))
 //                .padding(.leading, 40)
-//            
+//
 //            content
 //                .padding(.vertical, 10)
 //                .background(
@@ -475,7 +495,7 @@ struct IntroPageThreeView: View {
 //    @Binding var isLoading: Bool
 //    let text: String
 //    let systemImage: String
-//    
+//
 //    var body: some View {
 //        HStack {
 //            if isLoading {
@@ -485,7 +505,7 @@ struct IntroPageThreeView: View {
 //                Image(systemName: systemImage)
 //                    .font(.headline)
 //            }
-//            
+//
 //            Text(text)
 //                .font(.custom("Noteworthy", size: 16))
 //                .fontWeight(.medium)
@@ -516,29 +536,29 @@ struct IntroPageThreeView: View {
 //            .frame(height: 10)
 //            .padding(.horizontal)
 //    }
-//    
+//
 //    struct ZigZagLine: Shape {
 //        func path(in rect: CGRect) -> Path {
 //            var path = Path()
 //            let width = rect.width
 //            let height = rect.height
 //            let segmentWidth: CGFloat = 10
-//            
+//
 //            path.move(to: CGPoint(x: 0, y: height / 2))
-//            
+//
 //            var currentX: CGFloat = 0
 //            var goingUp = true
-//            
+//
 //            while currentX < width {
 //                let nextX = min(currentX + segmentWidth, width)
 //                let nextY = goingUp ? 0 : height
-//                
+//
 //                path.addLine(to: CGPoint(x: nextX, y: nextY))
-//                
+//
 //                currentX = nextX
 //                goingUp.toggle()
 //            }
-//            
+//
 //            return path
 //        }
 //    }

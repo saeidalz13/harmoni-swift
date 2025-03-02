@@ -15,6 +15,7 @@ struct AuthView: View {
     @State private var showAlert: Bool = false
     @State private var isLoadingGoogleSignIn = false
     @State private var currentSlide = 0
+    @State private var opacity: Double = 0  // Add a state for opacity
     private let slidesNum = 2
     
     var body: some View {
@@ -88,6 +89,7 @@ struct AuthView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(BackgroundView(selection: .auth))
         .ignoresSafeArea()
+        .opacity(opacity)
         .gesture(
             DragGesture()
                 .onEnded { gesture in
@@ -105,6 +107,14 @@ struct AuthView: View {
                     }
                 }
         )
+        .onAppear {
+            withAnimation(.easeIn(duration: 0.5)) {
+                opacity = 1
+            }
+        }
+        .onDisappear {
+            opacity = 0
+        }
         
         .alert("Error", isPresented: $showAlert) {
             Button("Dimiss", role: .cancel) {}
@@ -122,7 +132,9 @@ struct AuthView: View {
         )?.windows.first?.rootViewController
         else {return}
         
-        GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) { signInResult, error in
+        GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) {
+            signInResult,
+            error in
             if let e = error {
                 print("Failed to sign in with Google: \(e.localizedDescription)")
                 return
@@ -138,9 +150,14 @@ struct AuthView: View {
                 return
             }
             
+            guard let profile = result.user.profile else { return }
+            
             Task {
                 do {
-                    try await authViewModel.authenticateBackend(idToken: idToken.tokenString)
+                    try await authViewModel.authenticateBackend(
+                        idToken: idToken.tokenString,
+                        email: profile.email
+                    )
                 } catch {
                     throw error
                 }

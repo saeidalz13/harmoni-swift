@@ -11,24 +11,18 @@ struct User: Codable {
     let email: String
     let firstName: String?
     let lastName: String?
-    let bondTitle: String?
-    let bondId: String?
-    let bondCreatedAt: String?
-    let partnerId: String?
-    let partnerEmail: String?
-    let partnerFirstName: String?
-    let partnerLastName: String?
-    
-    static func empty() -> User {
-        return User(id: "", email: "", firstName: nil, lastName: nil, bondTitle: nil,
-                    bondId: nil, bondCreatedAt: nil, partnerId: nil, partnerEmail: nil,
-                    partnerFirstName: nil, partnerLastName: nil)
-    }
+    let birthDate: String?
+}
+
+struct UserInfo: Codable {
+    let user: User
+    let partner: User?
+    let bond: Bond?
 }
 
 // User Info Query
 struct UserInfoResponse: Codable {
-    let userInfo: User?
+    let userInfo: UserInfo?
 }
 
 struct UserInfoInput: Codable {
@@ -52,14 +46,13 @@ struct UpdateUserResponse: Codable {
 }
 
 // Authentication
-struct AuthPayload: Codable {
-    let user: User
+struct AuthenticateIdTokenPayload: Codable {
     let accessToken: String
     let refreshToken: String
 }
 
 struct AuthenticateIdTokenResponse: Codable {
-    let authenticateIdToken: AuthPayload?
+    let authenticateIdToken: AuthenticateIdTokenPayload?
 }
 
 struct AuthenticateIdTokenInput: Codable {

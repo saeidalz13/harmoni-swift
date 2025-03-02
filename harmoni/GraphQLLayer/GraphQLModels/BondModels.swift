@@ -14,12 +14,18 @@ struct Bond: Codable {
 
 //
 struct CreateBondInput: Codable {
-    let bondTitle: String!
+    let firstName: String
+    let lastName: String
+    let birthDate: String
+    let bondTitle: String
 }
 
+struct CreateBondPayload: Codable {
+    let bondId: String
+}
 
 struct CreateBondResponse: Codable {
-    let createBond: Bond?
+    let createBond: CreateBondPayload?
 }
 
 //
@@ -34,6 +40,9 @@ struct UpdateBondResponse: Codable {
 
 //
 struct JoinBondInput: Codable {
+    let firstName: String
+    let lastName: String
+    let birthDate: String
     let bondId: String
 }
 

@@ -10,7 +10,7 @@ import GoogleSignIn
 @Observable @MainActor
 final class AuthViewModel {
     private var _isAuth: Bool = false
-    private var _isFirstTimeUser = false
+    private var _isHarmoniFirstTimeUser = false
     private var _email = ""
     
     var isLoading = true
@@ -20,15 +20,15 @@ final class AuthViewModel {
         set { _isAuth = newValue }
     }
     var isHarmoniFirstTimeUser: Bool {
-        get { return _isFirstTimeUser }
-        set { _isFirstTimeUser = newValue }
+        get { return _isHarmoniFirstTimeUser }
+        set { _isHarmoniFirstTimeUser = newValue }
     }
     var email : String? {
         get { return _email == "" ? nil : _email }
         set { _email = newValue ?? "" }
     }
     
-    func authenticateBackend(idToken: String) async throws {
+    func authenticateBackend(idToken: String, email: String) async throws {
         let gqlData = try await GraphQLManager.shared.execQuery(
             query: GraphQLQuery.authenticateIdToken,
             input: AuthenticateIdTokenInput.init(
@@ -46,24 +46,27 @@ final class AuthViewModel {
             refreshToken: authPayload.refreshToken
         )
         
-        isAuth = true
-        email = authPayload.user.email
+        self.isAuth = true
+        self.email = email
+        self.isLoading = false
         
         let isHarmoniFirstTimeUserStr = KeychainManager.shared.retrieveFromKeychain(
             key: KeychainKey.isHarmoniFirstTimeUser
         )
-        isHarmoniFirstTimeUser = isHarmoniFirstTimeUserStr == nil
-        
-        // TODO: This should be where user completed initial info
-//        if isHarmoniFirstTimeUser {
-//            print("first time")
-//            try KeychainManager.shared.saveToKeychain(token: "onboarded", key: .isHarmoniFirstTimeUser)
-//        }
+        self.isHarmoniFirstTimeUser = isHarmoniFirstTimeUserStr == nil
+    }
+    
+    func markUserAsOnboarded() throws {
+        try KeychainManager.shared.saveToKeychain(token: "onboarded", key: .isHarmoniFirstTimeUser)
+        self.isHarmoniFirstTimeUser = false
     }
     
     func logOutBackend() {
         KeychainManager.shared.removeTokensFromKeychain()
+        
+        // TODO: Delete this line later
         KeychainManager.shared.removeTokenByKey(key: .isHarmoniFirstTimeUser)
+        
         GIDSignIn.sharedInstance.signOut()
         
         isAuth = false

@@ -40,19 +40,6 @@ enum GraphQLQuery {
         switch self {
         case .authenticateIdToken:
             returnField = """
-            user {
-                id 
-                email 
-                firstName 
-                lastName 
-                bondTitle 
-                bondId
-                bondCreatedAt
-                partnerId
-                partnerEmail
-                partnerFirstName
-                partnerLastName
-            }
             accessToken
             refreshToken
             """
@@ -71,9 +58,7 @@ enum GraphQLQuery {
             
         case .createBond:
             returnField = """
-            id
-            bondTitle
-            createdAt
+            bondId
             """
             
         case .updateBond:
@@ -96,17 +81,25 @@ enum GraphQLQuery {
         
         case .userInfo:
             returnField = """
-            id 
-            email 
-            firstName 
-            lastName 
-            bondTitle 
-            bondId
-            bondCreatedAt
-            partnerId
-            partnerEmail
-            partnerFirstName
-            partnerLastName
+            user {
+                id 
+                email 
+                firstName 
+                lastName
+                birthDate
+            }
+            partner {
+                id 
+                email 
+                firstName 
+                lastName
+                birthDate
+            }
+            bond {
+                id 
+                bondTitle
+                createdAt           
+            }
             """
             
         case .partnerInfo:

@@ -8,10 +8,10 @@ import SwiftUI
 
 @Observable @MainActor
 final class HomeViewModel {
-    var user: User?
+    var user: UserInfo?
 //    var recentChapterSummary: ChapterSummary?
     
-    func fetchUser(email: String) async throws -> User {
+    func fetchUser(email: String) async throws -> UserInfo {
         let gqlData = try await GraphQLManager.shared.execQuery(
             query: GraphQLQuery.userInfo,
             input: UserInfoInput(email: email),

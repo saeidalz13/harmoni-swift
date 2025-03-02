@@ -19,7 +19,7 @@ struct harmoniApp: App {
     init() {
         do {
             let storeURL = URL.documentsDirectory.appending(path: "database.sqlite")
-            print("Database path:", storeURL.path)
+//            print("Database path:", storeURL.path)
             let schema = Schema(
                 [
                     LocalUser.self
@@ -53,19 +53,27 @@ struct harmoniApp: App {
                     GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
                         if let error {
                             print("Could not restore google user sign in: \(error.localizedDescription)")
+                            authViewModel.isLoading = false
                             return
                         }
+          
+//                        KeychainManager.shared.removeTokensFromKeychain()
+//                        KeychainManager.shared.removeTokenByKey(key: .isHarmoniFirstTimeUser)
+//                        GIDSignIn.sharedInstance.signOut()
+//                        return
                         
                         let accessToken = KeychainManager.shared.retrieveFromKeychain(key: KeychainKey.accessToken)
                         if accessToken == nil {
                             print("no access token in keychain")
                             GIDSignIn.sharedInstance.signOut()
+                            authViewModel.isLoading = false
                             return
                         }
                         let refreshToken = KeychainManager.shared.retrieveFromKeychain(key: KeychainKey.refreshToken)
                         if refreshToken == nil {
                             print("no refresh token in keychain")
                             GIDSignIn.sharedInstance.signOut()
+                            authViewModel.isLoading = false
                             return
                         }
                         

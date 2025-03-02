@@ -11,9 +11,9 @@ struct RomanticTextFieldWithButtonView: View {
     var fieldText: String
     var buttonText: String
     @Binding var varToEdit: String
-    var systemImage: String
+    @Binding var isLoading: Bool
+    var systemImage: String?
     var action: () -> Void
-    @State private var isLoading = false
     @State var isFieldEmpty = true
     
     

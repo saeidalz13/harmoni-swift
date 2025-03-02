@@ -22,16 +22,8 @@ struct UserProfileView: View {
                 .clipShape(Circle())
             
             if let u = user {
-                if !isPartner {
-                    Text(u.firstName?.capitalized ?? "Click To Set Name")
-                        .font(.caption)
-                } else {
-                    Text(
-                        u.partnerId != nil ? (u.partnerFirstName?.isEmpty == false ? u.partnerFirstName! : u.partnerEmail ?? "No Partner!") : "No Partner!"
-                    )
-                    
+                Text(u.firstName?.capitalized ?? "Click To Set Name")
                     .font(.caption)
-                }
             }
             
         }

@@ -10,38 +10,34 @@ import SwiftData
 struct HomeView: View {
     @Environment(LocalUserViewModel.self) private var localUserViewModel
     @Environment(AuthViewModel.self) private var authViewModel
-    @Environment(\.modelContext) private var modelContext
     
     @State var homeViewModel = HomeViewModel()
     
-    @State private var user: User?
+    @State private var user: UserInfo?
     @State private var isEditingUserInfo = false
     @State private var isLoading = false
     @State private var isLoadingRefresh = false
     @State private var copied = false
     @State private var serverErr: String?
     
-    init() {
-        self._user = .init(initialValue: User.empty())
-    }
 
     var body: some View {
         ScrollView {
             
             if !authViewModel.isHarmoniFirstTimeUser {
                 HStack{
-                    UserProfileView(user: user, isPartner: false)
+                    UserProfileView(user: user?.user, isPartner: false)
                     
                     VStack {
-                        CandleView(text: user?.bondTitle ?? "No Bond Yet")
+                        CandleView(text: user?.bond?.bondTitle ?? "No Bond Yet")
                     }
                     .padding()
                     .padding(.top, 15)
                     
-                    UserProfileView(user: user, isPartner: true)
+                    UserProfileView(user: user?.partner, isPartner: true)
                 }
                 
-                if user?.partnerId == nil {
+                if user?.partner?.id == nil {
                     NewUserSuggestionsView(bondId: "")
                     
                 } else {
