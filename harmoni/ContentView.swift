@@ -11,10 +11,16 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            if authViewModel.isAuth {
+            if authViewModel.isLoading {
+                TransitionLoadingView()
+            }
+            
+            if !authViewModel.isLoading && authViewModel.isAuth {
                 MainView()
                 
-            } else {
+            }
+            
+            if !authViewModel.isLoading && !authViewModel.isAuth {
                 AuthView()
             }
         }

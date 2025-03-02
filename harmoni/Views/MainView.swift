@@ -7,33 +7,23 @@
 // This has View protocol (interface) in it.
 import SwiftUI
 
-
-enum TabSelection: Int8 {
-    case home
-    case relationship
-    case finance
-    case upkeep
-    case settings
-}
-
-
 struct MainView: View {
     @Environment(AuthViewModel.self) private var authViewModel
-    @State private var selection: Int8 = TabSelection.home.rawValue
-//    @State private var isChatActive = false
+    @State private var selection: TabSelection = .home
     
     init() {
         let scrollEdgeAppearance = UITabBarAppearance()
-//        scrollEdgeAppearance.configureWithDefaultBackground()
         scrollEdgeAppearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterial)
         scrollEdgeAppearance.backgroundColor = UIColor.clear
         UITabBar.appearance().standardAppearance = scrollEdgeAppearance
         UITabBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance
+        
+        // scrollEdgeAppearance.configureWithDefaultBackground()
         // UITabBar.appearance().unselectedItemTintColor = UIColor.black
     }
     
     var body: some View {
-        ZStack {
+        VStack {
             if authViewModel.isHarmoniFirstTimeUser {
                 FirstTimeUserHomeView()
                 
@@ -44,37 +34,37 @@ struct MainView: View {
                             .tabItem {
                                 Label("Home", systemImage: "house.fill")
                             }
-                            .tag(TabSelection.home.rawValue)
+                            .tag(TabSelection.home)
                         
                         RelationshipView()
                             .tabItem {
                                 Label("Relationship", systemImage: "heart.fill")
                             }
-                            .tag(TabSelection.relationship.rawValue)
+                            .tag(TabSelection.relationship)
                         
                         FinanceView()
                             .tabItem {
                                 Label("Finance", systemImage: "dollarsign.ring")
                             }
-                            .tag(TabSelection.finance.rawValue)
+                            .tag(TabSelection.finance)
                         
                         UpkeepView()
                             .tabItem {
                                 Label("Upkeep", systemImage: "basket.fill")
                             }
-                            .tag(TabSelection.upkeep.rawValue)
+                            .tag(TabSelection.upkeep)
                         
                         SettingsView()
                             .tabItem {
                                 Label("Settings", systemImage: "slider.horizontal.2.square")
                             }
-                            .tag(TabSelection.settings.rawValue)
+                            .tag(TabSelection.settings)
                     }
                     .padding(.top, 60)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(backgroundView())
+                    .background(BackgroundView(selection: selection))
                     .ignoresSafeArea()
-                    
+                                        
                 }
                 .tint(Color.maroon)
                 .background(.red)
@@ -83,46 +73,8 @@ struct MainView: View {
             
         }
     }
-    
-    /// Chooses different colors for different tabs
-    private func backgroundView() -> some View {
-        let gradientColors: [Color]
-        //
-        switch selection {
-        case TabSelection.home.rawValue:
-            gradientColors = [Color.purple.opacity(0.7), Color.purple.opacity(0.2)]
-        case TabSelection.relationship.rawValue:
-            gradientColors = [Color.pink.opacity(0.9), Color.purple.opacity(0.6)]
-        case TabSelection.finance.rawValue:
-            gradientColors = [Color.orange.opacity(0.8), Color.yellow.opacity(0.5)]
-        case TabSelection.upkeep.rawValue:
-            gradientColors = [Color.green.opacity(0.8), Color.teal.opacity(0.6)]
-        case TabSelection.settings.rawValue:
-            gradientColors = [Color.blue.opacity(0.8), Color.teal.opacity(0.6)]
-        default:
-            gradientColors = [Color.white, Color.gray]
-        }
-        
-        return LinearGradient(gradient: Gradient(colors: gradientColors), startPoint: .top, endPoint: .bottom)
-            .overlay(heartOverlay())
-    }
-    
-    /// Creates a romantic heart overlay effect
-    private func heartOverlay() -> some View {
-        ZStack {
-            ForEach(0..<10, id: \.self) { _ in
-                Image(systemName: "heart.fill")
-                    .foregroundColor(.white.opacity(0.2))
-                    .font(.system(size: CGFloat.random(in: 50...150)))
-                    .position(
-                        x: CGFloat.random(in: 50...UIScreen.main.bounds.width - 50),
-                        y: CGFloat.random(in: 100...UIScreen.main.bounds.height - 100)
-                    )
-            }
-        }
-    }
 }
-            
+//    @State private var isChatActive = false
 //            VStack {
 //                HStack {
 //                    Button(action: {

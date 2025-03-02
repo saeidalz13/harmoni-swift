@@ -18,6 +18,21 @@ struct User: Codable {
     let partnerEmail: String?
     let partnerFirstName: String?
     let partnerLastName: String?
+    
+    static func empty() -> User {
+        return User(id: "", email: "", firstName: nil, lastName: nil, bondTitle: nil,
+                    bondId: nil, bondCreatedAt: nil, partnerId: nil, partnerEmail: nil,
+                    partnerFirstName: nil, partnerLastName: nil)
+    }
+}
+
+// User Info Query
+struct UserInfoResponse: Codable {
+    let userInfo: User?
+}
+
+struct UserInfoInput: Codable {
+    let email: String
 }
 
 

@@ -73,19 +73,12 @@ struct harmoniApp: App {
                             key: KeychainKey.isHarmoniFirstTimeUser
                         )
                         authViewModel.isHarmoniFirstTimeUser = isHarmoniFirstTimeUserStr == nil
-                        if authViewModel.isHarmoniFirstTimeUser {
-                            do {
-                                try KeychainManager.shared.saveToKeychain(token: "onboarded", key: .isHarmoniFirstTimeUser)
-                            } catch {
-                                // TODO: Ignoring this for now
-                                print(error)
-                            }
-                        }
                         
                         guard let user = user else { return }
                         guard let profile = user.profile else { return }
                         authViewModel.email = profile.email
                         authViewModel.isAuth = true
+                        authViewModel.isLoading = false
                     }
                 }
         }

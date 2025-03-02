@@ -217,10 +217,10 @@ final class LocalUserViewModel {
         try modelContext.save()
     }
     
-    func logOutBackend() async throws {
-        KeychainManager.shared.removeTokensFromKeychain()
-        GIDSignIn.sharedInstance.signOut()
-        
+//    func logOutBackend() async throws {
+//        KeychainManager.shared.removeTokensFromKeychain()
+//        GIDSignIn.sharedInstance.signOut()
+//        
         //        do {
         //            let _ = try await GraphQLManager.shared.execQuery(
         //                query: GraphQLQuery.logOut,
@@ -242,6 +242,6 @@ final class LocalUserViewModel {
         //        GIDSignIn.sharedInstance.signOut()
         //        localUser = nil
         //    }
-    }
+//    }
 }
 

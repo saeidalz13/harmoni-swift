@@ -11,6 +11,8 @@ struct RomanticContainer<Content: View>: View {
     let content: Content
     var width: CGFloat?
     var height: CGFloat?
+    var maxWidth: CGFloat?
+    var maxHeight: CGFloat?
     var backgroundColor: Color
     var verticalPadding: CGFloat
     var horizontalPadding: CGFloat
@@ -18,6 +20,8 @@ struct RomanticContainer<Content: View>: View {
     init(
         width: CGFloat? = nil,
         height: CGFloat? = nil,
+        maxWidth: CGFloat? = .infinity,
+        maxHeight: CGFloat? = .infinity,
         backgroundColor: Color = .white.opacity(0.9),
         verticalPadding: CGFloat = 30,
         horizontalPadding: CGFloat = 20,
@@ -25,6 +29,8 @@ struct RomanticContainer<Content: View>: View {
     ) {
         self.width = width
         self.height = height
+        self.maxWidth = maxWidth
+        self.maxHeight = maxHeight
         self.backgroundColor = backgroundColor
         self.verticalPadding = verticalPadding
         self.horizontalPadding = horizontalPadding
@@ -35,6 +41,10 @@ struct RomanticContainer<Content: View>: View {
         VStack {
             content
         }
+        .frame(
+            maxWidth: maxWidth != .infinity ? maxWidth : .infinity,
+            maxHeight: maxHeight != .infinity ? maxHeight: .infinity
+        )
         .frame(width: width, height: height)
         .padding(.vertical, verticalPadding)
         .padding(.horizontal, horizontalPadding)

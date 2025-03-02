@@ -9,57 +9,63 @@ import SwiftData
 
 struct HomeView: View {
     @Environment(LocalUserViewModel.self) private var localUserViewModel
+    @Environment(AuthViewModel.self) private var authViewModel
     @Environment(\.modelContext) private var modelContext
     
+    @State var homeViewModel = HomeViewModel()
+    
+    @State private var user: User?
     @State private var isEditingUserInfo = false
-    @State var isLoading = false
-    @State var isLoadingRefresh = false
-    @State var copied = false
-    @State var serverErr: String?
+    @State private var isLoading = false
+    @State private var isLoadingRefresh = false
+    @State private var copied = false
+    @State private var serverErr: String?
+    
+    init() {
+        self._user = .init(initialValue: User.empty())
+    }
 
     var body: some View {
         ScrollView {
-            if let lu = localUserViewModel.localUser {
-                if let bond = lu.bond {
+            
+            if !authViewModel.isHarmoniFirstTimeUser {
+                HStack{
+                    UserProfileView(user: user, isPartner: false)
                     
-                    HStack{
-                        if let lu = localUserViewModel.localUser {
-                            UserProfileView(user: lu, isPartner: false)
-                            
-                            VStack {
-                                CandleView(text: lu.bond?.title ?? "No Bond Yet")
-                            }
-                            .padding()
-                            .padding(.top, 15)
-                            
-                            UserProfileView(user: lu, isPartner: true)
-                            
-                        }
+                    VStack {
+                        CandleView(text: user?.bondTitle ?? "No Bond Yet")
                     }
+                    .padding()
+                    .padding(.top, 15)
                     
-                    if lu.partnerId == nil {
-                        NewUserSuggestionsView(bondId: bond.id)
-                    } else {
-                        // View when user has both Bond and Partner
-                        
-                        RelationshipSummaryView()
-                    }
-                    
-                } else {
-                    FirstTimeUserHomeView()
+                    UserProfileView(user: user, isPartner: true)
                 }
                 
+                if user?.partnerId == nil {
+                    NewUserSuggestionsView(bondId: "")
+                    
+                } else {
+                    
+                    // View when user has both Bond and Partner
+                    RelationshipSummaryView()
+                }
+                
+            } else {
+                FirstTimeUserHomeView()
             }
+
             Spacer(minLength: 120)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .task {
+            guard let email = authViewModel.email else { return }
             do {
-                
+                user = try await homeViewModel.fetchUser(email: email)
             } catch {
-                
+                print(error)
             }
         }
+        .animation(.easeInOut, value: user != nil)
     }
     
 }

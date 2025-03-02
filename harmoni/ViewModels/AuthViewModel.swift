@@ -7,11 +7,13 @@
 import SwiftUI
 import GoogleSignIn
 
-@Observable
+@Observable @MainActor
 final class AuthViewModel {
     private var _isAuth: Bool = false
     private var _isFirstTimeUser = false
     private var _email = ""
+    
+    var isLoading = true
     
     var isAuth: Bool {
         get { return _isAuth }
@@ -51,10 +53,21 @@ final class AuthViewModel {
             key: KeychainKey.isHarmoniFirstTimeUser
         )
         isHarmoniFirstTimeUser = isHarmoniFirstTimeUserStr == nil
-        if isHarmoniFirstTimeUser {
-            try KeychainManager.shared.saveToKeychain(token: "onboarded", key: .isHarmoniFirstTimeUser)
-        }
         
+        // TODO: This should be where user completed initial info
+//        if isHarmoniFirstTimeUser {
+//            print("first time")
+//            try KeychainManager.shared.saveToKeychain(token: "onboarded", key: .isHarmoniFirstTimeUser)
+//        }
+    }
+    
+    func logOutBackend() {
+        KeychainManager.shared.removeTokensFromKeychain()
+        KeychainManager.shared.removeTokenByKey(key: .isHarmoniFirstTimeUser)
+        GIDSignIn.sharedInstance.signOut()
+        
+        isAuth = false
+        email = ""
     }
     
 }

@@ -20,77 +20,75 @@ struct NewUserSuggestionsView: View {
     
     var body: some View {
         RomanticContainer {
-            VStack {
-                Text("💌 Share Bond ID")
-                    .font(.headline)
-                    .foregroundStyle(.pink)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-                    .scaleEffect(1.05)
-                    .animation(.easeInOut(duration: 0.4), value: bondId)
-                
-                Text("So they can complete this bond with you 💫")
-                    .font(.caption)
-                    .foregroundStyle(.black)
-                    .multilineTextAlignment(.center)
-                    .opacity(0.8)
-                
-                Button {
-                    UIPasteboard.general.string = bondId
-                    copied = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        copied = false
-                    }
-                } label: {
-                    RomanticLabelView(isLoading: $isLoading, text: "Copy ID 🔗")
-                    if copied {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.green)
-                            .transition(.opacity)
-                    }
+            Text("💌 Share Bond ID")
+                .font(.headline)
+                .foregroundStyle(.pink)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+                .scaleEffect(1.05)
+                .animation(.easeInOut(duration: 0.4), value: bondId)
+            
+            Text("So they can complete this bond with you 💫")
+                .font(.caption)
+                .foregroundStyle(.black)
+                .multilineTextAlignment(.center)
+                .opacity(0.8)
+            
+            Button {
+                UIPasteboard.general.string = bondId
+                copied = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    copied = false
                 }
-                .padding(.top, 5)
+            } label: {
+                RomanticLabelView(isLoading: $isLoading, text: "Copy ID 🔗")
+                if copied {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                        .transition(.opacity)
+                }
             }
-            .frame(maxWidth: .infinity, alignment: .center)
-            .padding(.horizontal)
-            .layoutPriority(1)
         }
+        .padding(.horizontal, 20)
         
-        RomanticContainer {
-            VStack {
-                Text("If your partner has joined, refresh to retrieve their info")
-                    .font(.caption)
-                    .foregroundStyle(.black)
-                    .multilineTextAlignment(.center)
-                    .opacity(0.8)
-                
-                Button {
-                    isLoadingRefresh = true
-                    Task {
-                        do {
-                            try await localUserViewModel.getPartner()
-                        } catch GeneralError.optionalFieldUnavailable {
-                            err = "You should create/join a bond first!"
-                        } catch {
-                            err = "Guess this is an oopsie for us :( Something went wrong!"
-                            print(error)
-                        }
-                        
-                        isLoadingRefresh = false
-                    }
-                } label: {
-                    RomanticLabelView(
-                        isLoading: $isLoadingRefresh,
-                        text: "Refresh",
-                        systemImage: "arrow.trianglehead.2.clockwise",
-                        linearGradient: LinearGradient(colors: [.gray, .white], startPoint: .leading, endPoint: .trailing)
-                    )
-                    
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .center)
-            .padding(.horizontal)
-            .layoutPriority(1)
-        }
     }
 }
+
+
+//
+//        RomanticContainer {
+//            VStack {
+//                Text("If your partner has joined, refresh to retrieve their info")
+//                    .font(.caption)
+//                    .foregroundStyle(.black)
+//                    .multilineTextAlignment(.center)
+//                    .opacity(0.8)
+//
+//                Button {
+//                    isLoadingRefresh = true
+//                    Task {
+//                        do {
+//                            try await localUserViewModel.getPartner()
+//                        } catch GeneralError.optionalFieldUnavailable {
+//                            err = "You should create/join a bond first!"
+//                        } catch {
+//                            err = "Guess this is an oopsie for us :( Something went wrong!"
+//                            print(error)
+//                        }
+//
+//                        isLoadingRefresh = false
+//                    }
+//                } label: {
+//                    RomanticLabelView(
+//                        isLoading: $isLoadingRefresh,
+//                        text: "Refresh",
+//                        systemImage: "arrow.trianglehead.2.clockwise",
+//                        linearGradient: LinearGradient(colors: [.gray, .white], startPoint: .leading, endPoint: .trailing)
+//                    )
+//
+//                }
+//            }
+//            .frame(maxWidth: .infinity, alignment: .center)
+//            .padding(.horizontal)
+//            .layoutPriority(1)
+//        }

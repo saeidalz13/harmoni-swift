@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct UserProfileView: View {
-    var user: LocalUser?
+    var user: User?
     var isPartner: Bool
     @State var showPopover: Bool = false
     @Environment(LocalUserViewModel.self) private var localUserViewModel

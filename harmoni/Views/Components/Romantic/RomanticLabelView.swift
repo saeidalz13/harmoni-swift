@@ -13,9 +13,12 @@ struct RomanticLabelView: View {
     
     var systemImage: String?
     var linearGradient: LinearGradient = LinearGradient(
-        colors: [.pink],
-        startPoint: .leading,
-        endPoint: .trailing
+        colors: [
+            Color.softPink,
+            Color.teal.opacity(0.8)
+        ],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
     )
     var verticalPadding: CGFloat = 10
     var horizontalPadding: CGFloat = 20
@@ -25,9 +28,9 @@ struct RomanticLabelView: View {
     let loadingLG = LinearGradient(colors: [.black], startPoint: .leading, endPoint: .trailing)
     
     var body: some View {
-        LabelContent(isLoading: isLoading, text: text, systemImage: systemImage ?? "")
-            .font(.subheadline)
-            .fontWeight(.semibold)
+        LabelContent(isLoading: isLoading, text: text, systemImage: systemImage)
+            .font(.custom("Avenir", size: 15))
+            .fontWeight(.medium)
             .padding(.vertical, verticalPadding)
             .padding(.horizontal, horizontalPadding)
             .background(isLoading ? loadingLG : linearGradient)
@@ -42,7 +45,7 @@ struct RomanticLabelView: View {
 struct LabelContent: View {
     var isLoading: Bool
     var text: String
-    var systemImage: String
+    var systemImage: String?
     
     var body: some View {
         if isLoading {
@@ -56,7 +59,12 @@ struct LabelContent: View {
 //            Image(systemName: "checkmark.circle.fill")
 //                .foregroundColor(.green)
 //                .transition(.opacity)
-            Label(text, systemImage: systemImage)
+            if let systemImage {
+                Label(text, systemImage: systemImage)
+            } else {
+                Text(text)
+            }
+            
         }
     }
 }

@@ -22,6 +22,7 @@ enum GraphQLQuery {
     case joinBond
     
     // Queries
+    case userInfo
     case partnerInfo
     
     var str: String {
@@ -92,6 +93,21 @@ enum GraphQLQuery {
             partnerFirstName
             partnerLastName
             """
+        
+        case .userInfo:
+            returnField = """
+            id 
+            email 
+            firstName 
+            lastName 
+            bondTitle 
+            bondId
+            bondCreatedAt
+            partnerId
+            partnerEmail
+            partnerFirstName
+            partnerLastName
+            """
             
         case .partnerInfo:
             returnField = """
@@ -101,7 +117,6 @@ enum GraphQLQuery {
             partnerLastName
             """
         }
-        
         
         if withInput {
             return generateQueryWithInput(type: type, returnFields: returnField)

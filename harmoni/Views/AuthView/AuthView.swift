@@ -11,7 +11,6 @@ import GoogleSignIn
 
 
 struct AuthView: View {
-    @Environment(LocalUserViewModel.self) private var localUserViewModel
     @Environment(AuthViewModel.self) private var authViewModel
     @State private var showAlert: Bool = false
     @State private var isLoadingGoogleSignIn = false
@@ -20,7 +19,7 @@ struct AuthView: View {
     
     var body: some View {
         VStack {
-            RomanticContainer {
+            RomanticContainer(backgroundColor: .white.opacity(0.55)) {
                 Text("Harmoni 🍃")
                     .font(.custom("Zapfino", size: 30))
                     .fontWeight(.semibold)
@@ -63,7 +62,18 @@ struct AuthView: View {
                     .padding(.bottom, 15)
                 
                 Button {
-                    handleSignInButton()
+                    isLoadingGoogleSignIn = true
+                    do {
+                        try handleSignInButton()
+                    } catch {
+                        showAlert = true
+                        print("Authorization failed: \(error.localizedDescription)")
+                        KeychainManager.shared.removeTokensFromKeychain()
+                        GIDSignIn.sharedInstance.signOut()
+                    }
+                    authViewModel.isLoading = false
+                    isLoadingGoogleSignIn = false
+                    
                 } label: {
                     RomanticLabelView(
                         isLoading: $isLoadingGoogleSignIn,
@@ -76,7 +86,7 @@ struct AuthView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(AuthBackgroundView())
+        .background(BackgroundView(selection: .auth))
         .ignoresSafeArea()
         .gesture(
             DragGesture()
@@ -90,7 +100,7 @@ struct AuthView: View {
                     } else if gesture.translation.width < -threshold {
                         // Slide left to right (show next)
                         withAnimation {
-                            currentSlide = min(2, currentSlide + 1)
+                            currentSlide = min(slidesNum - 1, currentSlide + 1)
                         }
                     }
                 }
@@ -103,7 +113,9 @@ struct AuthView: View {
         }
     }
     
-    func handleSignInButton() {
+    
+    // TODO: Take the whole thing to ViewModel
+    func handleSignInButton() throws {
         guard let presentingViewController = (
             UIApplication.shared.connectedScenes.first
             as? UIWindowScene
@@ -127,9 +139,13 @@ struct AuthView: View {
             }
             
             Task {
-                await localUserViewModel.authenticateBackend(idToken: idToken.tokenString)
+                do {
+                    try await authViewModel.authenticateBackend(idToken: idToken.tokenString)
+                } catch {
+                    throw error
+                }
+                
             }
-
         }
     }
 

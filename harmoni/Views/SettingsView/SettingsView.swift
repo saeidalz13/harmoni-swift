@@ -8,30 +8,21 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @Environment(LocalUserViewModel.self) private var localUserViewModel
+    @Environment(AuthViewModel.self) private var authViewModel
     @State private var isLoading = false
     
     var body: some View {
         VStack {
-        
+            
             Button {
-                Task {
-                    await logOut()
-                }
+                authViewModel.logOutBackend()
+
             } label: {
                 RomanticLabelView(isLoading: $isLoading, text: "Log Out")
             }
+            
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
 
-    }
-    
-    private func logOut() async {
-        do {
-            try await localUserViewModel.logOutBackend()
-        }
-        catch {
-            print(error)
-        }
     }
 }

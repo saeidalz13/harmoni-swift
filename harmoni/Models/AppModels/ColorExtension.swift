@@ -8,4 +8,6 @@ import SwiftUI
 
 extension Color {
     static let maroon = Color(UIColor(red: 0.6, green: 0, blue: 0, alpha: 1))
+    
+    static let softPink = Color(red: 0.95, green: 0.5, blue: 0.65)
 }
