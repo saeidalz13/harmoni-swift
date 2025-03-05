@@ -29,16 +29,18 @@ final class AuthViewModel {
     }
     
     func authenticateBackend(idToken: String, email: String) async throws {
-        let gqlData = try await GraphQLManager.shared.execQuery(
-            query: GraphQLQuery.authenticateIdToken,
-            input: AuthenticateIdTokenInput.init(
-                idToken: idToken
+        let gqlData = try await GraphQLManager.shared.execOperation(
+            GraphQLOperationBuilder.authenticateBackend.build(),
+            variables: AuthenticateIdTokenVariables(
+                authenticateIdTokenInput: AuthenticateIdTokenInput.init(
+                    idToken: idToken
+                )
             ),
             withBearer: false
         ) as AuthenticateIdTokenResponse
         
         guard let authPayload = gqlData.authenticateIdToken else {
-            throw GraphQLError.unavailableData(queryName: "authenticateIdToken")
+            throw GraphQLError.unavailableData(queryName: GraphQLOperationBuilder.authenticateBackend.operationName)
         }
         
         try KeychainManager.shared.saveTokensToKeychain(
@@ -48,12 +50,12 @@ final class AuthViewModel {
         
         self.isAuth = true
         self.email = email
-        self.isLoading = false
         
         let isHarmoniFirstTimeUserStr = KeychainManager.shared.retrieveFromKeychain(
             key: KeychainKey.isHarmoniFirstTimeUser
         )
         self.isHarmoniFirstTimeUser = isHarmoniFirstTimeUserStr == nil
+        self.isLoading = false
     }
     
     func markUserAsOnboarded() throws {
@@ -61,7 +63,13 @@ final class AuthViewModel {
         self.isHarmoniFirstTimeUser = false
     }
     
-    func logOutBackend() {
+    func logOutBackend() async throws {
+        // TODO: send backend logout
+//        let _ = try await GraphQLManager.shared.execOperation(
+//            GraphQLOperation.logOut,
+//            variables: LogOutInput(logOut: <#T##UserIdResponse?#>)
+//        )
+//        
         KeychainManager.shared.removeTokensFromKeychain()
         
         // TODO: Delete this line later

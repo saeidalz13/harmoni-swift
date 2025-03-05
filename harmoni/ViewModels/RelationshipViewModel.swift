@@ -8,10 +8,7 @@
 import SwiftData
 
 @Observable @MainActor
-final class ChapterViewModel {
-    private var modelContext: ModelContext
+final class RelationshipViewModel {
+    var chapters: [String]?
     
-    init(modelContext: ModelContext) {
-        self.modelContext = modelContext
-    }
 }
