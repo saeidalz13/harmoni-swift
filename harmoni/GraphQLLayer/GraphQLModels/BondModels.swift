@@ -20,12 +20,16 @@ struct CreateBondInput: Codable {
     let bondTitle: String
 }
 
-struct CreateBondPayload: Codable {
-    let bondId: String
+struct CreateBondVariables: Codable {
+    let createBondInput: CreateBondInput
 }
 
+//struct CreateBondPayload: Codable {
+//    let bondId: String
+//}
+
 struct CreateBondResponse: Codable {
-    let createBond: CreateBondPayload?
+    let createBond: String
 }
 
 //
@@ -46,16 +50,14 @@ struct JoinBondInput: Codable {
     let bondId: String
 }
 
-struct JoinBondPayload: Codable {
-    let bondId: String
-    let bondTitle: String
-    let bondCreatedAt: String
-    let partnerId: String
-    let partnerEmail: String
-    let partnerFirstName: String?
-    let partnerLastName: String?
+struct JoinBondVariables: Codable {
+    let joinBondInput: JoinBondInput
 }
 
+//struct JoinBondPayload: Codable {
+//    let bondId: String
+//}
+
 struct JoinBondResponse: Codable {
-    let joinBond: JoinBondPayload?
+    let joinBond: String
 }

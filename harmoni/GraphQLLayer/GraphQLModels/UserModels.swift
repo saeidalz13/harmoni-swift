@@ -25,8 +25,12 @@ struct UserInfoResponse: Codable {
     let userInfo: UserInfo?
 }
 
-struct UserInfoInput: Codable {
-    let email: String
+//struct UserInfoInput: Codable {
+//    let email: String
+//}
+
+struct UserInfoVariables: Codable {
+    let userInfoInput: String
 }
 
 
@@ -59,6 +63,10 @@ struct AuthenticateIdTokenInput: Codable {
     let idToken: String
 }
 
+struct AuthenticateIdTokenVariables: Codable {
+    let authenticateIdTokenInput: AuthenticateIdTokenInput
+}
+
 // Renewal access Token
 struct RenewAccessTokenInput: Codable {
     let refreshToken: String
@@ -79,15 +87,16 @@ struct LogOutInput: Codable  {
 }
 
 // partner
-struct PartnerInfoInput: Codable {
-    let bondId: String
+//struct PartnerInfoInput: Codable {
+//    let bondId: String
+//}
+
+struct PartnerInfoVariables: Codable {
+    let partnerInfoInput: String
 }
 
 struct PartnerInfoPayload: Codable {
-    let partnerId: String
-    let partnerEmail: String
-    let partnerFirstName: String?
-    let partnerLastName: String?
+    let partner: User
 }
 
 struct PartnerInfoResponse: Codable {

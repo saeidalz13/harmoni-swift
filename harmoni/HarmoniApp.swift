@@ -50,13 +50,15 @@ struct harmoniApp: App {
                     GIDSignIn.sharedInstance.handle(url)
                 }
                 .onAppear {
+                    let loadingStartTime = Date()
+
                     GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
                         if let error {
                             print("Could not restore google user sign in: \(error.localizedDescription)")
                             authViewModel.isLoading = false
                             return
                         }
-          
+         
 //                        KeychainManager.shared.removeTokensFromKeychain()
 //                        KeychainManager.shared.removeTokenByKey(key: .isHarmoniFirstTimeUser)
 //                        GIDSignIn.sharedInstance.signOut()
@@ -86,9 +88,29 @@ struct harmoniApp: App {
                         guard let profile = user.profile else { return }
                         authViewModel.email = profile.email
                         authViewModel.isAuth = true
-                        authViewModel.isLoading = false
+                        
+                        finishLoadingWithMinimumTime(startTime: loadingStartTime, minimumTime: 1.5) {
+                            authViewModel.isLoading = false
+                        }
+                        
                     }
                 }
+        }
+    }
+    
+    private func finishLoadingWithMinimumTime(startTime: Date, minimumTime: TimeInterval, completion: @escaping () -> Void) {
+        let elapsedTime = Date().timeIntervalSince(startTime)
+        let remainingTime = max(0, minimumTime - elapsedTime)
+        
+        if remainingTime > 0 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + remainingTime) {
+                completion()
+            }
+        } else {
+            // Minimum time already elapsed, execute immediately
+            DispatchQueue.main.async {
+                completion()
+            }
         }
     }
 }

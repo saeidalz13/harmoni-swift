@@ -8,6 +8,8 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(AuthViewModel.self) private var authViewModel
+    @State var homeVM: HomeViewModel = .init()
+    @State var userVM: UserViewModel = .init()
     
     var body: some View {
         ZStack {
@@ -17,7 +19,8 @@ struct ContentView: View {
             
             if !authViewModel.isLoading && authViewModel.isAuth {
                 MainView()
-                
+                    .environment(homeVM)
+                    .environment(userVM)
             }
             
             if !authViewModel.isLoading && !authViewModel.isAuth {

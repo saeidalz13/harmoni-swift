@@ -49,4 +49,12 @@ enum DataSerializer {
             throw DataSerializationError.jsonDecoding(data: data, error: error)
         }
     }
+    
+    static func dataToDictionary(_ data: Data) throws -> [String: Any] {
+        let jsonSerialization = try JSONSerialization.jsonObject(with: data, options: [])
+        guard let dictionary = jsonSerialization as? [String: Any] else {
+            throw DataSerializationError.dataToTextDecoding
+        }
+        return dictionary
+    }
 }

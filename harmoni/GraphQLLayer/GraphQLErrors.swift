@@ -8,6 +8,7 @@
 enum GraphQLError: Error {
     case unavailableData(queryName: String)
     case mutation(error: [RespPayloadError])
+    case invalidDefinitions
     
     var localizedDescription: String {
         switch self {
@@ -15,6 +16,8 @@ enum GraphQLError: Error {
             return "no data available in payload \(queryName)"
         case .mutation(let errors):
             return "error in gql payload: \(errors)"
+        case .invalidDefinitions:
+            return "must provide at least one definition"
         }
  
     }

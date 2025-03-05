@@ -8,23 +8,20 @@ import Foundation
 
 struct GraphQLRequest<T: Codable>: Codable {
     let query: String
-    var variables: T?
+    let variables: T?
 }
+
 
 final class GraphQLManager: Sendable {
     static let shared = GraphQLManager()
     private init() {}
-    
-    
-    func execQuery<T: Codable, U: Codable>(query: GraphQLQuery, input: T?, type: GraphQLRequestType = .mutation, withBearer: Bool) async throws -> U {
-        var graphQLRequest = GraphQLRequest(
-            query: query.generate(type: type, withInput: input != nil),
-            variables: ["input": input]
+
+    func execOperation<T: Codable, U: Codable>(_ operation: GraphQLOperation, variables: T? = nil, withBearer: Bool) async throws -> U {
+        let graphQLRequest = GraphQLRequest(
+            query: operation.string,
+            variables: variables
         )
-        if input == nil {
-            graphQLRequest.variables = nil
-        }
-      
+        
         let httpReqBody = try DataSerializer.encodeJSON(value: graphQLRequest)
         
         var retry = true
@@ -62,7 +59,7 @@ final class GraphQLManager: Sendable {
         }
         
         guard let gqlData = gqlPayload.data else {
-            throw GraphQLError.unavailableData(queryName: query.str)
+            throw GraphQLError.unavailableData(queryName: operation.name)
         }
         
         return gqlData
@@ -74,8 +71,8 @@ final class GraphQLManager: Sendable {
         }
         
         let graphQLRequest = GraphQLRequest(
-            query: GraphQLQuery.renewAccessToken.generate(type: .mutation),
-            variables: ["input": RenewAccessTokenInput(refreshToken: refreshToken)]
+            query: GraphQLOperationBuilder.renewAccessToken.build().string,
+            variables: ["renewAccessTokenInput": RenewAccessTokenInput(refreshToken: refreshToken)]
         )
         
         let httpReqBody = try DataSerializer.encodeJSON(value: graphQLRequest)
