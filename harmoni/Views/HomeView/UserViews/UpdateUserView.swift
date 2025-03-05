@@ -10,7 +10,7 @@ import SwiftUI
 struct UpdateUserView: View {
 //    @Environment(\.presentationMode) var presentationMode
     @Environment(LocalUserViewModel.self) private var localUserViewModel
-    var user: LocalUser
+    var user: User?
     
     @State private var editedEmail: String
     @State private var editedFirstName: String
@@ -21,11 +21,18 @@ struct UpdateUserView: View {
     @State private var alertMessage = ""
     @State private var isLoading = false
     
-    init(user: LocalUser) {
+    init(user: User?) {
         self.user = user
-        self._editedEmail = State(initialValue: user.email)
-        self._editedFirstName = State(initialValue: user.firstName ?? "")
-        self._editedLastName = State(initialValue: user.lastName ?? "")
+        if let u = user {
+            self._editedEmail = State(initialValue: u.email)
+            self._editedFirstName = State(initialValue: u.firstName ?? "")
+            self._editedLastName = State(initialValue: u.lastName ?? "")
+        }
+        else {
+            self._editedEmail = State(initialValue: "=")
+            self._editedFirstName = State(initialValue:  "")
+            self._editedLastName = State(initialValue: "")
+        }
     }
     
     var body: some View {
@@ -55,11 +62,11 @@ struct UpdateUserView: View {
     private func updateUser() async {
         isLoading = true
         do {
-            try await localUserViewModel.updateUser(
-                email: editedEmail.lowercased(),
-                firstName: editedFirstName.lowercased(),
-                lastName: editedLastName.lowercased()
-            )
+//            try await localUserViewModel.updateUser(
+//                email: editedEmail.lowercased(),
+//                firstName: editedFirstName.lowercased(),
+//                lastName: editedLastName.lowercased()
+//            )
             alertTitle = "Success"
             alertMessage = "Personal info updated successfully!"
         } catch {

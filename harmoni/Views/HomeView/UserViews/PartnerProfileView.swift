@@ -7,22 +7,18 @@
 import SwiftUI
 
 struct PartnerProfileView: View {
-    var user: LocalUser
-    @Environment(LocalUserViewModel.self) private var localUserViewModel
+    var user: User?
     @State var copied = false
     @State var isLoading = false
     @State var isLoadingRefresh = false
-    
-    init(user: LocalUser) {
-        self.user = user
-    }
+    @Environment(UserViewModel.self) private var userVM
     
     var body: some View {
-        RomanticContainer {
+        RomanticContainer(width: 250) {
             VStack {
-                if user.partnerId != nil {
+                if let u = user  {
                     Button {
-                        UIPasteboard.general.string = user.partnerId
+                        UIPasteboard.general.string = u.id
                         copied = true
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                             copied = false
@@ -38,22 +34,22 @@ struct PartnerProfileView: View {
                     .padding(.bottom, 5)
  
                     SmallTextLabel(text: "email 📥")
-                    Text(user.partnerEmail!)
+                    Text(u.email)
                     Divider()
                     
                     SmallTextLabel(text: "First name 🪪")
-                    Text(user.partnerFirstName ?? "No first name!")
+                    Text(u.firstName ?? "No first name!")
                     Divider()
 
                     SmallTextLabel(text: "Last name 🪪")
-                    Text(user.partnerLastName ?? "No last name!")
+                    Text(u.lastName ?? "No last name!")
                     
                    
                     Button {
                         isLoadingRefresh = true
                         Task {
                             do {
-                                try await localUserViewModel.getPartner()
+                                try await userVM.fetchPartner()
                             } catch GeneralError.optionalFieldUnavailable {
 //                                serverErr = "You should create/join a bond first!"
                             } catch {
@@ -66,12 +62,11 @@ struct PartnerProfileView: View {
                         RomanticLabelView(
                             isLoading: $isLoadingRefresh,
                             text: "Refresh",
-                            systemImage: "arrow.trianglehead.2.clockwise",
-                            linearGradient: LinearGradient(gradient: Gradient(colors: [Color.gray]), startPoint: .leading, endPoint: .trailing)
+                            systemImage: "arrow.trianglehead.2.clockwise"
                         )
                         
                     }
-//                    CopyItemHStackView(varToCopy: user.partnerId!, text: "Copy ID")
+
                 } else {
                     Text("Refresh to Retrieve Data")
                 }

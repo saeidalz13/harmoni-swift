@@ -12,7 +12,6 @@ struct CandleView: View {
     @State private var showPopover: Bool = false
     @State private var verticalFlameOffset: CGFloat = 40
     @State private var horizontalFlameOffset: CGFloat = 20
-    @Environment(LocalUserViewModel.self) private var localUserViewModel
     
     var body: some View {
         ZStack {
@@ -87,12 +86,12 @@ struct BondPopoverView: View {
                 Task {
                     isLoading = true
                     
-                    do {
-                        try await localUserViewModel.updateBond(bondTitle: newBondTitle)
-                    } catch {
-                        print(error.localizedDescription)
-                    }
-                    
+//                    do {
+//                        try await localUserViewModel.updateBond(bondTitle: newBondTitle)
+//                    } catch {
+//                        print(error.localizedDescription)
+//                    }
+//                    
                     isLoading = false
                 }
             } label: {

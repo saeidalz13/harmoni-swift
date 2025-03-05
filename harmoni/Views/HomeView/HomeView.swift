@@ -8,41 +8,30 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
-    @Environment(LocalUserViewModel.self) private var localUserViewModel
     @Environment(AuthViewModel.self) private var authViewModel
-    
-    @State var homeViewModel = HomeViewModel()
-    
-    @State private var user: UserInfo?
-    @State private var isEditingUserInfo = false
-    @State private var isLoading = false
-    @State private var isLoadingRefresh = false
-    @State private var copied = false
-    @State private var serverErr: String?
-    
+    @Environment(HomeViewModel.self) private var homeVM
+    @Environment(UserViewModel.self) private var userVM
+    //    @State var homeVM = HomeViewModel()
 
     var body: some View {
         ScrollView {
-            
             if !authViewModel.isHarmoniFirstTimeUser {
                 HStack{
-                    UserProfileView(user: user?.user, isPartner: false)
+                    UserProfileView(user: userVM.user, isPartner: false)
                     
                     VStack {
-                        CandleView(text: user?.bond?.bondTitle ?? "No Bond Yet")
+                        CandleView(text: userVM.bond?.bondTitle ?? "No Bond Yet")
                     }
                     .padding()
                     .padding(.top, 15)
                     
-                    UserProfileView(user: user?.partner, isPartner: true)
+                    UserProfileView(user: userVM.partner, isPartner: true)
+                        .animation(.easeInOut, value: userVM.partner != nil)
                 }
                 
-                if user?.partner?.id == nil {
-                    NewUserSuggestionsView(bondId: "")
-                    
+                if userVM.partner == nil {
+                    NewUserSuggestionsView(bond: userVM.bond)
                 } else {
-                    
-                    // View when user has both Bond and Partner
                     RelationshipSummaryView()
                 }
                 
@@ -54,34 +43,11 @@ struct HomeView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .task {
-            guard let email = authViewModel.email else { return }
-            do {
-                user = try await homeViewModel.fetchUser(email: email)
-            } catch {
-                print(error)
-            }
+             
         }
-        .animation(.easeInOut, value: user != nil)
+        .animation(.easeInOut(duration: 1), value: userVM.user != nil)
     }
     
 }
 
-
-/// Seeds test users if none exist
-//    private func seedTestDataIfNeeded() {
-//        guard let lu = authViewModel.localUser else { return }
-//        print("loading seed data")
-//
-//        let testUsers = [
-//            LocalUser(id: "1111", email: "user1@example.com", bondTitle: "The Smiths"),
-//            LocalUser(id: "2222", email: "partner@example.com", familyTitle: "The Smiths")
-//        ]
-//
-//        for user in testUsers {
-//            modelContext.insert(user)
-//        }
-//
-//        try? modelContext.save()
-//    }
-//
 

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct RelationshipSummaryView: View {
+    
     var body: some View {
         RomanticContainer(backgroundColor: Color(red: 1.0, green: 0.98, blue: 0.92).opacity(0.8)) {
             VStack(spacing: 5) {
@@ -48,9 +49,8 @@ struct RelationshipSummaryView: View {
                 .padding(.vertical, 5)
                 
             }
-            .frame(maxWidth: .infinity, alignment: .center)
-            .padding(.horizontal)
-            .layoutPriority(1)
         }
+        .padding(.horizontal)
+        
     }
 }

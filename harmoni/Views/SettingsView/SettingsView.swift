@@ -15,7 +15,14 @@ struct SettingsView: View {
         VStack {
             
             Button {
-                authViewModel.logOutBackend()
+                Task {
+                    do {
+                        try await authViewModel.logOutBackend()
+                    } catch {
+                        print(error)
+                    }
+                }
+                
 
             } label: {
                 RomanticLabelView(isLoading: $isLoading, text: "Log Out")

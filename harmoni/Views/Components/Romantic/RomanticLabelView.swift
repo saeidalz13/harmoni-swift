@@ -6,6 +6,14 @@
 //
 import SwiftUI
 
+/*
+ TODO: Change this to Button
+ 1. Accept a closure
+    - this closuer returns an struct of (Bool, Message)
+    - after completion, popover that blurs the background (ZStack)
+        - shows the Message (if true, mint popover else softPink popover)
+ 2. Adding a popover to this after completion
+ */
 struct RomanticLabelView: View {
     // TODO: Add a success binding variable to this
     @Binding var isLoading: Bool

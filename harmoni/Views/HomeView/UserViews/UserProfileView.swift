@@ -9,8 +9,9 @@ import SwiftUI
 struct UserProfileView: View {
     var user: User?
     var isPartner: Bool
+
     @State var showPopover: Bool = false
-    @Environment(LocalUserViewModel.self) private var localUserViewModel
+    @Environment(AuthViewModel.self) private var authViewModel
     
     var body: some View {
         VStack {
@@ -36,20 +37,19 @@ struct UserProfileView: View {
             showPopover = true
         }
         .popover(isPresented: $showPopover) {
-            if let lu = localUserViewModel.localUser {
-                Group {
-                    if !isPartner {
-                        UpdateUserView(user: lu)
-                            .padding()
-                            .frame(maxHeight: 300, alignment: .center)
-                    } else {
-                        PartnerProfileView(user: lu)
-                            .padding()
-                            .frame(alignment: .center)
-                    }
+            Group {
+                if !isPartner {
+                    UpdateUserView(user: user)
+                        .padding()
+                        .frame(maxHeight: 300, alignment: .center)
+                } else {
+                    PartnerProfileView(user: user)
+                        .padding()
+                        .frame(alignment: .center)
                 }
-                .presentationCompactAdaptation(.popover)
             }
+            .presentationCompactAdaptation(.popover)
+            
         }
     }
 }

@@ -25,7 +25,8 @@ struct BackgroundView: View {
         case .auth:
             gradientColors = [Color.pink.opacity(0.5), Color.teal.opacity(0.6)]
         case .home:
-            gradientColors = [Color.purple.opacity(0.7), Color.pink.opacity(0.2)]
+            gradientColors = [Color.pink.opacity(0.6), Color.teal.opacity(0.6)]
+//            gradientColors = [Color.purple.opacity(0.7), Color.pink.opacity(0.2)]
         case .relationship:
             gradientColors = [Color.pink.opacity(0.9), Color.purple.opacity(0.6)]
         case .finance:

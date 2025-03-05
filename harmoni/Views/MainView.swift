@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MainView: View {
     @Environment(AuthViewModel.self) private var authViewModel
+    @Environment(UserViewModel.self) private var userVM
     @State private var selection: TabSelection = .home
     
     init() {
@@ -67,7 +68,14 @@ struct MainView: View {
                                         
                 }
                 .tint(Color.maroon)
-                .background(.red)
+                .task {
+                    guard let email = authViewModel.email else { return }
+                    do {
+                        try await userVM.fetchUserInfo(email: email)
+                    } catch {
+                        print(error)
+                    }
+                }
                 
             }
             

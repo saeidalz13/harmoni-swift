@@ -317,7 +317,6 @@ struct PageThreeView: View {
                             birthDate: DateFormatter.HarmoniFormatter.string(from: birthDate),
                             bondTitle: newBondTitle
                         )
-                        isLoadingCreateBond = false
 
                         try authViewModel.markUserAsOnboarded()
                     } catch {
@@ -339,7 +338,24 @@ struct PageThreeView: View {
                 isLoading: $isLoadingJoinBond,
                 systemImage: "heart.fill"
             ) {
-                // TODO: joinBond
+                isLoadingJoinBond = true
+                Task {
+                    do {
+                        try await firstTimeUserVM.joinBond(
+                            firstName: firstName,
+                            lastName: lastName,
+                            birthDate: DateFormatter.HarmoniFormatter.string(from: birthDate),
+                            bondId: bondIdToJoin
+                        )
+                        
+                        try authViewModel.markUserAsOnboarded()
+                        
+                    } catch {
+                        print(error)
+                    }
+                }
+                
+                isLoadingJoinBond = false
             }
             
             
