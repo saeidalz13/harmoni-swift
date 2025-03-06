@@ -89,7 +89,7 @@ struct harmoniApp: App {
                         authViewModel.email = profile.email
                         authViewModel.isAuth = true
                         
-                        finishLoadingWithMinimumTime(startTime: loadingStartTime, minimumTime: 1.5) {
+                        finishLoadingWithMinimumTime(startTime: loadingStartTime, minimumTime: 1) {
                             authViewModel.isLoading = false
                         }
                         

@@ -60,35 +60,52 @@ struct NewUserSuggestionsView: View {
                 .multilineTextAlignment(.center)
                 .opacity(0.8)
             
-            Button {
-                isLoadingRefresh = true
-                Task {
-                    do {
-                        try await userVM.fetchPartner()
-                    } catch GeneralError.optionalFieldUnavailable {
-                        err = "You should create/join a bond first!"
-                    } catch {
-                        err = "Guess this is an oopsie for us :( Something went wrong!"
-                        print(error)
-                    }
-                    
-                    isLoadingRefresh = false
-                }
-            } label: {
-                RomanticLabelView(
-                    isLoading: $isLoadingRefresh,
-                    text: "Refresh",
-                    systemImage: "arrow.trianglehead.2.clockwise"
-                )
-                
-            }
+            RomanticButton(
+                isLoading: $isLoadingRefresh,
+                text: "Refresh",
+                systemImage:  "arrow.trianglehead.2.clockwise",
+                action: refresh
+            )
+//
+//            Button {
+//                isLoadingRefresh = true
+//                Task {
+//                    do {
+//                        try await userVM.fetchPartner()
+//                    } catch GeneralError.optionalFieldUnavailable {
+//                        err = "You should create/join a bond first!"
+//                    } catch {
+//                        err = "Guess this is an oopsie for us :( Something went wrong!"
+//                        print(error)
+//                    }
+//                    
+//                    isLoadingRefresh = false
+//                }
+//            } label: {
+//                RomanticLabelView(
+//                    isLoading: $isLoadingRefresh,
+//                    text: "Refresh",
+//                    systemImage: "arrow.trianglehead.2.clockwise"
+//                )
+//                
+//            }
             
             
         }
         .padding(.horizontal, 20)
     }
+    
+    private func refresh() async -> ButtonActionResult {
+        do {
+            try await userVM.fetchPartner()
+            return .fulfilled("Successfully refreshed")
+            
+        } catch GeneralError.optionalFieldUnavailable {
+            return .notFulfilled("You should create/join a bond first!")
+
+        } catch {
+            return .serverError
+        }
+    }
 }
-
-
-//
 

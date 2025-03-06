@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 
-struct TransitionLoadingView: View {
+struct RomanticTransitionLoadingView: View {
     @State private var opacity: Double = 0.7
     @State private var offsetX: CGFloat = 0
     @State private var offsetY: CGFloat = 0
@@ -76,72 +76,6 @@ struct TransitionLoadingView: View {
     }
 }
 
-struct OrbitingHeartsView: View {
-    let mainHeartSize: CGFloat = 120
-    let orbitingHeartSize: CGFloat = 80
-    let orbitRadius: CGFloat = 90
-    
-    let animationDuration: Double = 4.0
-    
-    @State private var animationPhase: Double = 0
-    
-    var body: some View {
-        TimelineView(.animation) { timeline in
-            // Calculate the current angle based on the current date
-            // This provides smooth continuous animation
-            let date = timeline.date
-            let angle = animationPhase + date.timeIntervalSinceReferenceDate.remainder(dividingBy: animationDuration) / animationDuration * 2 * .pi
-            
-            ZStack {
-                // Position based on z-index to handle occlusion
-                if sin(angle) < 0 {
-                    orbitingHeartView(angle: angle)
-                    mainHeartView
-                } else {
-                    mainHeartView
-                    orbitingHeartView(angle: angle)
-                }
-            }
-        }
-    }
-    
-    // Main heart view
-    private var mainHeartView: some View {
-        Image(systemName: "heart.fill")
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(width: mainHeartSize, height: mainHeartSize)
-            .foregroundColor(.pink.opacity(0.8))
-    }
-    
-    // Orbiting heart view with size and position variations
-    private func orbitingHeartView(angle: Double) -> some View {
-        // Calculate scale and opacity factors based on the sine of the angle
-        let scaleFactor = 0.7 + 0.3 * (1 + sin(angle)) / 2
-        let opacityFactor = 0.7 + 0.3 * (1 + sin(angle)) / 2
-        let shadowIntensity = 0.2 * (1 + sin(angle)) / 2
-        
-        return Image(systemName: "heart.fill")
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(
-                width: orbitingHeartSize * scaleFactor,
-                height: orbitingHeartSize * scaleFactor
-            )
-            .opacity(opacityFactor)
-            .offset(
-                x: cos(angle) * orbitRadius,
-                y: 0
-            )
-            .foregroundColor(Color.softPink)
-            .shadow(
-                color: .black.opacity(shadowIntensity),
-                radius: 5,
-                x: 0,
-                y: 2
-            )
-    }
-}
 
 //struct TransitionLoadingView: View {
 //    // Animation states

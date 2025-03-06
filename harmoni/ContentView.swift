@@ -14,7 +14,7 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             if authViewModel.isLoading {
-                TransitionLoadingView()
+                RomanticTransitionLoadingView()
             }
             
             if !authViewModel.isLoading && authViewModel.isAuth {

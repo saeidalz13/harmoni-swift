@@ -23,7 +23,7 @@ final class NetworkManager: Sendable {
             
         let request = createPostRequest(httpBody: httpBody, bearerToken: accessToken)
         
-        print(try DataSerializer.dataToText(data: request.httpBody!))
+//        print(try DataSerializer.dataToText(data: request.httpBody!))
             
         let (data, response) = try await URLSession.shared.data(for: request)
         
