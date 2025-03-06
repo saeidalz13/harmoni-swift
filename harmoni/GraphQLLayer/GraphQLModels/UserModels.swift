@@ -41,12 +41,16 @@ struct UpdateUserInput: Codable {
     let lastName: String
 }
 
-struct UserIdResponse: Codable {
-    let id: String
+struct UpdateUserVariables: Codable {
+    let updateUserInput: UpdateUserInput
 }
 
+//struct UserIdResponse: Codable {
+//    let id: String
+//}
+
 struct UpdateUserResponse: Codable {
-    let updateUser: UserIdResponse?
+    let updateUser: String
 }
 
 // Authentication
@@ -82,8 +86,8 @@ struct RenewAccessTokenResponse: Codable {
 }
 
 // logout
-struct LogOutInput: Codable  {
-    let logOut: UserIdResponse?
+struct LogOutResponse: Codable  {
+    let logOut: String
 }
 
 // partner

@@ -31,7 +31,7 @@ struct RomanticButton: View {
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
-    var verticalPadding: CGFloat = 10
+    var verticalPadding: CGFloat = 5
     var horizontalPadding: CGFloat = 20
     var cornerRadius: CGFloat = 20
     var shadowColor: Color = .pink.opacity(0.15)

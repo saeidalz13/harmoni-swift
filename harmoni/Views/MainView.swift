@@ -26,7 +26,7 @@ struct MainView: View {
     var body: some View {
         VStack {
             if authViewModel.isHarmoniFirstTimeUser {
-                FirstTimeUserHomeView()
+                OnboardingView()
                 
             } else {
                 TabView(selection: $selection) {
@@ -63,7 +63,7 @@ struct MainView: View {
                     }
                     .padding(.top, 60)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(BackgroundView(selection: selection))
+                    .background(HeartedBackgroundView(selection: .tabSelection(selection)))
                     .ignoresSafeArea()
                                         
                 }

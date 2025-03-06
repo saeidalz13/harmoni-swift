@@ -38,13 +38,26 @@ struct NewUserSuggestionsView: View {
                         copied = false
                     }
                 } label: {
-                    RomanticLabelView(isLoading: $isLoading, text: "Copy ID 🔗")
-                    if copied {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.green)
-                            .transition(.opacity)
+                    HStack {
+                        Text(copied ? "Copied!" : "Copy ID")
+                            .padding(.horizontal, 2)
+                            .font(.avenirCaption)
+                            .foregroundStyle(Color.black)
+                        
+                        if copied {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                                .transition(.opacity)
+                        } else {
+                            Image(systemName: "doc.on.doc")
+                                .foregroundColor(.black)
+                        }
                     }
+                    .padding(8)
+                    .background(Color.creamyLavender.opacity(0.2))
+                    .clipShape(Capsule())
                 }
+                
             }
             .padding(.horizontal, 20)
             

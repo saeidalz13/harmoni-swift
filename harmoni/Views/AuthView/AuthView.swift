@@ -87,7 +87,7 @@ struct AuthView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(BackgroundView(selection: .auth))
+        .background(HeartedBackgroundView(selection: .tabSelection(.auth)))
         .ignoresSafeArea()
         .opacity(opacity)
         .gesture(

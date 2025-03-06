@@ -36,19 +36,18 @@ struct UserProfileView: View {
         .onTapGesture {
             showPopover = true
         }
-        .popover(isPresented: $showPopover) {
+        .popover(isPresented: $showPopover, attachmentAnchor: .point(.bottom), arrowEdge: .top) {
             Group {
                 if !isPartner {
-                    UpdateUserView(user: user)
-                        .padding()
-                        .frame(maxHeight: 300, alignment: .center)
+                    UserPopoverView(user: user)
+                        
                 } else {
-                    PartnerProfileView(user: user)
-                        .padding()
-                        .frame(alignment: .center)
+                    PartnerPopoverView(user: user)
+                        
                 }
             }
             .presentationCompactAdaptation(.popover)
+            .frame(maxWidth: .infinity ,maxHeight: .infinity, alignment: .center)
             
         }
     }

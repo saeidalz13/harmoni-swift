@@ -36,7 +36,7 @@ struct HomeView: View {
                 }
                 
             } else {
-                FirstTimeUserHomeView()
+                OnboardingView()
             }
 
             Spacer(minLength: 120)

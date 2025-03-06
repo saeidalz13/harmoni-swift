@@ -16,7 +16,7 @@ struct PageContent: Identifiable {
     }
 }
 
-struct FirstTimeUserHomeView: View {
+struct OnboardingView: View {
     private var pages: [PageContent]
     @State private var currentPageIndex: Int = 0
     @State private var dragOffset: CGFloat = 0
@@ -89,7 +89,7 @@ struct FirstTimeUserHomeView: View {
                     }
                 }
             }
-            .background(BackgroundView(selection: .auth))
+            .background(HeartedBackgroundView(selection: .tabSelection(.auth)))
             .ignoresSafeArea()
             .opacity(animationCompleted ? 1 : 0)
             
@@ -404,16 +404,6 @@ struct IntroPageThreeView: View {
         
     }
 }
-
-
-
-//            Button {
-//                authViewModel.logOutBackend()
-//
-//            } label: {
-//                RomanticLabelView(isLoading: $isLoading, text: "Log Out")
-//            }
-
 
 
 

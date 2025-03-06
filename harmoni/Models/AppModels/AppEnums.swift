@@ -30,3 +30,17 @@ enum ButtonActionResult {
         }
     }
 }
+
+enum TabSelection: Int8 {
+    case auth
+    case home
+    case relationship
+    case finance
+    case upkeep
+    case settings
+}
+
+enum BackgroundViewSelection {
+    case tabSelection(TabSelection)
+    case popover
+}

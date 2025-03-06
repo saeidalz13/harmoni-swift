@@ -46,7 +46,7 @@ struct RomanticTransitionLoadingView: View {
                 .padding(.top, 15)
             }
         }
-        .background(BackgroundView(selection: .auth))
+        .background(HeartedBackgroundView(selection: .tabSelection(.auth)))
         .edgesIgnoringSafeArea(.all)
         .onAppear {
             // Start the timer for animating dots

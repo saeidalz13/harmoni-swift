@@ -12,6 +12,7 @@ struct CandleView: View {
     @State private var showPopover: Bool = false
     @State private var verticalFlameOffset: CGFloat = 40
     @State private var horizontalFlameOffset: CGFloat = 20
+    @Environment(UserViewModel.self) private var userVM
     
     var body: some View {
         ZStack {
@@ -36,10 +37,13 @@ struct CandleView: View {
                 }
         }
         .onTapGesture {
-            showPopover = true
+            if userVM.bond != nil {
+                showPopover = true
+            }
+            
         }
         .popover(isPresented: $showPopover, attachmentAnchor: .point(.bottom), arrowEdge: .top) {
-            BondPopoverView()
+            BondPopoverView(bondTitle: userVM.bond!.bondTitle)
                 .presentationCompactAdaptation(.popover)
                 .padding()
                 .frame(minWidth: 300, alignment: .center)
@@ -57,52 +61,3 @@ struct CandleView: View {
     }
 }
 
-struct BondPopoverView: View {
-    @State var newBondTitle = ""
-    @State private var isLoading: Bool = false
-    @Environment(LocalUserViewModel.self) private var localUserViewModel
-    
-    var bond: BondModel {
-        guard let user = localUserViewModel.localUser, let bond = user.bond else {
-            return BondModel(id: "", title: "", createdAt: Date())
-        }
-        
-        return bond
-    }
-    
-    var body: some View {
-        VStack(alignment: .center) {
-            Text("Title: \(bond.title)")
-                .font(.headline)
-            
-            Divider()
-            
-            TextField("New Title", text: $newBondTitle)
-                .padding(5)
-                .background(Color(.systemGray.withAlphaComponent(0.1)))
-                .cornerRadius(10)
-            
-            Button {
-                Task {
-                    isLoading = true
-                    
-//                    do {
-//                        try await localUserViewModel.updateBond(bondTitle: newBondTitle)
-//                    } catch {
-//                        print(error.localizedDescription)
-//                    }
-//                    
-                    isLoading = false
-                }
-            } label: {
-                RomanticLabelView(
-                    isLoading: $isLoading,
-                    text: "Update",
-                    systemImage: "list.bullet.clipboard.fill"
-                )
-            }
-            
-        }
-        
-    }
-}

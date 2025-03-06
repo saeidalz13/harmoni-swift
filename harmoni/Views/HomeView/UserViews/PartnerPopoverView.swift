@@ -6,7 +6,7 @@
 //
 import SwiftUI
 
-struct PartnerProfileView: View {
+struct PartnerPopoverView: View {
     var user: User?
     @State var copied = false
     @State var isLoading = false

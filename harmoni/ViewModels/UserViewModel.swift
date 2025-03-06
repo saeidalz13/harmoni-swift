@@ -15,7 +15,7 @@ final class UserViewModel {
     var bond: Bond?
     
     func fetchUserInfo(email: String) async throws {
-
+        
         let gqlData = try await GraphQLManager.shared.execOperation(
             GraphQLOperationBuilder.userInfo.build(),
             variables: UserInfoVariables(userInfoInput: email),
@@ -59,5 +59,23 @@ final class UserViewModel {
         }
         
         partner = partnerInfoPayload.partner
+    }
+    
+    func updateUser(email: String, firstName: String, lastName: String) async throws {
+        let _ = try await GraphQLManager.shared.execOperation(
+            GraphQLOperationBuilder.updateUser.build(),
+            variables: UpdateUserVariables(
+                updateUserInput: UpdateUserInput(
+                    email: email,
+                    firstName: firstName,
+                    lastName: lastName
+                )
+            ),
+            withBearer: true
+        ) as UpdateUserResponse
+        
+        if let u = user {
+            self.user = User(id: u.id, email: email, firstName: firstName, lastName: lastName, birthDate: u.birthDate)
+        }
     }
 }

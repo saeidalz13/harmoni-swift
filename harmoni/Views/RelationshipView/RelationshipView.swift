@@ -8,16 +8,6 @@ import SwiftData
 import SwiftUI
 
 struct RelationshipView: View {
-    @Environment(LocalUserViewModel.self) private var localUserViewModel
-    
-    var sortedChapters: [ChapterModel] {
-        guard let user = localUserViewModel.localUser, let bond = user.bond else {
-            return []
-        }
-        
-       return bond.chapters.sorted(by: { $0.createdAt > $1.createdAt })
-    }
-
     @State var isLoadingCreateChapter: Bool = false
     
     var body: some View {
@@ -27,13 +17,6 @@ struct RelationshipView: View {
             RomanticContainer {
                 VStack {
                     Button {
-                        Task {
-                            do {
-                                
-                            } catch {
-                               print(error)
-                            }
-                        }
                         
                     } label: {
                         RomanticLabelView(isLoading: $isLoadingCreateChapter, text: "New Chapter 🍃")
@@ -45,13 +28,6 @@ struct RelationshipView: View {
             // ** start 2
             RomanticContainer {
                 VStack {
-                    if sortedChapters.isEmpty {
-                        Text("No chapters yet.")
-                    } else {
-                        List(sortedChapters) { chapter in
-                            Text(chapter.title)
-                        }
-                    }
                 }
             }
             // -- end 2

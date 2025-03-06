@@ -10,6 +10,8 @@ enum GraphQLOperationBuilder {
     case authenticateBackend
     case createBond
     case joinBond
+    case logOut
+    case updateUser
     
     case userInfo
     case partnerInfo
@@ -24,6 +26,10 @@ enum GraphQLOperationBuilder {
             return .init(operationName, definitions: [GraphQLMutation.renewAccessToken])
         case .authenticateBackend:
             return .init(operationName, definitions: [GraphQLMutation.authenticateIdToken])
+        case .logOut:
+            return .init(operationName, definitions: [GraphQLMutation.logOut])
+        case .updateUser:
+            return .init(operationName, definitions: [GraphQLMutation.updateUser])
         case .createBond:
             return .init(operationName, definitions: [GraphQLMutation.createBond])
         case .joinBond:

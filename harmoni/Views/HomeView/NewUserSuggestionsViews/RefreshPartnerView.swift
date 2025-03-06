@@ -37,7 +37,7 @@ struct RefreshPartnerView: View {
             return .fulfilled("Successfully refreshed")
             
         } catch GeneralError.optionalFieldUnavailable {
-            return .notFulfilled("Your person is in your heart but not in our database, yet!")
+            return .notFulfilled("Your person is in your heart but not in our database yet!")
 
         } catch {
             return .serverError
