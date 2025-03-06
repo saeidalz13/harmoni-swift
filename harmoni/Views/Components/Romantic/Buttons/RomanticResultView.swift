@@ -41,9 +41,10 @@ struct RomanticResultView: View {
                     Text(result!.title)
                         .font(.avenirBold)
 
-                    Text(msg) // Only use msg here because we know this case has a message
+                    Text(msg)
                         .font(.avenirCaption)
                         .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .opacity(isVisible ? 1 : 0)
                 .scaleEffect(isVisible ? 1 : 0.6)

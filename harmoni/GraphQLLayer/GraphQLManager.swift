@@ -15,6 +15,8 @@ struct GraphQLRequest<T: Codable>: Codable {
 final class GraphQLManager: Sendable {
     static let shared = GraphQLManager()
     private init() {}
+    
+    let maxRetry = 2
 
     func execOperation<T: Codable, U: Codable>(_ operation: GraphQLOperation, variables: T? = nil, withBearer: Bool) async throws -> U {
         let graphQLRequest = GraphQLRequest(
@@ -27,7 +29,7 @@ final class GraphQLManager: Sendable {
         var retry = true
         var attempts = 0
         var httpResp: Data? = nil
-        while retry && attempts < 3 {
+        while retry && attempts < maxRetry {
             do {
                 httpResp = try await NetworkManager.shared.makeHTTPPostRequest(httpBody: httpReqBody, withBearer: withBearer)
                 retry = false
@@ -43,7 +45,7 @@ final class GraphQLManager: Sendable {
             } catch {
                 attempts += 1
                 
-                if attempts >= 3 {
+                if attempts >= maxRetry {
                     throw error
                 }
                 sleep(1)
@@ -81,13 +83,13 @@ final class GraphQLManager: Sendable {
         var retry = true
         var attempts = 0
         
-        while retry && attempts < 3 {
+        while retry && attempts < maxRetry {
             do {
                 httpResp = try await NetworkManager.shared.makeHTTPPostRequest(httpBody: httpReqBody, withBearer: false)
                 retry = false
             } catch {
                 attempts += 1
-                if attempts >= 3 {
+                if attempts >= maxRetry {
                     throw error
                 }
                 sleep(1)

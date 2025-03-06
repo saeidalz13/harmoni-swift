@@ -51,6 +51,10 @@ struct RomanticButton: View {
                     showPopover = true
                 }
                 
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    showPopover = false
+                }
+                
             } label: {
                 RomanticLabelView(
                     isLoading: $isLoading,
@@ -68,7 +72,7 @@ struct RomanticButton: View {
         .popover(isPresented: $showPopover, attachmentAnchor: .point(.bottom), arrowEdge: .top) {
             RomanticResultView(result: $result)
                 .presentationCompactAdaptation(.popover)
-                .frame(alignment: .center)
+                .frame(maxHeight: .infinity, alignment: .center)
         }
     }
 }

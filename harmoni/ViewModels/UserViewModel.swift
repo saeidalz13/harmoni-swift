@@ -48,7 +48,7 @@ final class UserViewModel {
             if errors.first?.message == GraphQLErrorMessage.noPartner.rawValue {
                 partner = nil
             }
-            throw GraphQLError.mutation(error: errors)
+            throw GeneralError.optionalFieldUnavailable(fieldName: "partner")
             
         } catch {
             throw error
