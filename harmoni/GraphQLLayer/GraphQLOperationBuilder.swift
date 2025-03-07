@@ -33,7 +33,7 @@ enum GraphQLOperationBuilder {
         case .createBond:
             return .init(operationName, definitions: [GraphQLMutation.createBond])
         case .joinBond:
-            return .init(operationName, definitions: [GraphQLMutation.createBond])
+            return .init(operationName, definitions: [GraphQLMutation.joinBond])
         case .userInfo:
             return .init(operationName, definitions: [GraphQLQuery.userInfo])
         case .partnerInfo:

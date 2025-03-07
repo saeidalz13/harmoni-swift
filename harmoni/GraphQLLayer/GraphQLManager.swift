@@ -42,6 +42,10 @@ final class GraphQLManager: Sendable {
                     throw error
                 }
                 
+            } catch NetworkError.unprocessableEntity {
+                print(try DataSerializer.dataToText(data: httpReqBody))
+                throw NetworkError.unprocessableEntity
+                
             } catch {
                 attempts += 1
                 
@@ -100,7 +104,9 @@ final class GraphQLManager: Sendable {
         let gqlPayload = try DataSerializer.decodeJSON(data: httpResp!) as GraphQLRespPayload<RenewAccessTokenResponse>
         
         if let errors = gqlPayload.errors {
-            print(errors)
+            if errors.first?.message == GraphQLErrorMessage.noRefreshTokenOnServer.rawValue {
+                throw GraphQLError.noRefreshTokenUnauthUser
+            }
             throw GraphQLError.mutation(error: errors)
         }
         

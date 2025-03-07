@@ -32,7 +32,7 @@ struct OnboardingView: View {
     private var screenWidth: CGFloat {
         UIScreen.main.bounds.width
     }
-    var firstTimeUserVM: FirstTimeUserViewModel = .init()
+    var onboardingVM: OnboardingViewModel = .init()
     
     init() {
         self.pages = []
@@ -49,7 +49,7 @@ struct OnboardingView: View {
                     birthDate: $birthDate
                 )
             ),
-            PageContent(PageThreeView(firstName: $firstName, lastName: $lastName, birthDate: $birthDate, firstTimeUserVM: firstTimeUserVM))
+            PageContent(PageThreeView(firstName: $firstName, lastName: $lastName, birthDate: $birthDate, onboardingVM: onboardingVM))
         ]
     }
     
@@ -283,7 +283,7 @@ struct PageThreeView: View {
     @Binding var firstName: String
     @Binding var lastName: String
     @Binding var birthDate: Date
-    var firstTimeUserVM: FirstTimeUserViewModel
+    var onboardingVM: OnboardingViewModel
     
     @State private var newBondTitle = ""
     @State private var bondIdToJoin = ""
@@ -291,7 +291,6 @@ struct PageThreeView: View {
     @State private var isSuccessCreateBond = false
     @State private var isLoadingJoinBond = false
     
-//    @Environment(FirstTimeUserViewModel.self) private var firstTimeUserVM
     @Environment(AuthViewModel.self) private var authViewModel
     
     var body: some View {
@@ -311,7 +310,7 @@ struct PageThreeView: View {
                     isLoadingCreateBond = true
 
                     do {
-                        try await firstTimeUserVM.createBond(
+                        try await onboardingVM.createBond(
                             firstName: firstName,
                             lastName: lastName,
                             birthDate: DateFormatter.HarmoniFormatter.string(from: birthDate),
@@ -341,7 +340,7 @@ struct PageThreeView: View {
                 isLoadingJoinBond = true
                 Task {
                     do {
-                        try await firstTimeUserVM.joinBond(
+                        try await onboardingVM.joinBond(
                             firstName: firstName,
                             lastName: lastName,
                             birthDate: DateFormatter.HarmoniFormatter.string(from: birthDate),

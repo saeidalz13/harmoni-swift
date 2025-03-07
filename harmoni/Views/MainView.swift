@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MainView: View {
-    @Environment(AuthViewModel.self) private var authViewModel
+    @Environment(AuthViewModel.self) private var authVM
     @Environment(UserViewModel.self) private var userVM
     @State private var selection: TabSelection = .home
     
@@ -25,7 +25,7 @@ struct MainView: View {
     
     var body: some View {
         VStack {
-            if authViewModel.isHarmoniFirstTimeUser {
+            if authVM.isHarmoniFirstTimeUser {
                 OnboardingView()
                 
             } else {
@@ -69,9 +69,11 @@ struct MainView: View {
                 }
                 .tint(Color.maroon)
                 .task {
-                    guard let email = authViewModel.email else { return }
+                    guard let email = authVM.email else { return }
                     do {
                         try await userVM.fetchUserInfo(email: email)
+                    } catch GraphQLError.noRefreshTokenUnauthUser {
+                        authVM.signOutClient()
                     } catch {
                         print(error)
                     }

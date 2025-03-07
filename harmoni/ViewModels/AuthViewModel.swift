@@ -66,10 +66,13 @@ final class AuthViewModel {
             withBearer: true
         ) as LogOutResponse
         
+        signOutClient()
+    }
+    
+    func signOutClient() {
+//        KeychainManager.shared.removeTokenByKey(key: .isHarmoniFirstTimeUser)
         KeychainManager.shared.removeTokensFromKeychain()
-        
         GIDSignIn.sharedInstance.signOut()
-        
         isAuth = false
         email = ""
     }

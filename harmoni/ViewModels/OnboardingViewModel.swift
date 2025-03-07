@@ -1,5 +1,5 @@
 //
-//  FirstTimeUserViewModel.swift
+//  OnboardingViewModel.swift
 //  harmoni
 //
 //  Created by Saeid Alizadeh on 2025-03-02.
@@ -7,7 +7,7 @@
 import SwiftUI
 
 @Observable @MainActor
-final class FirstTimeUserViewModel {
+final class OnboardingViewModel {
     
     func createBond(firstName: String, lastName: String, birthDate: String, bondTitle: String) async throws {
         let gqlData = try await GraphQLManager.shared.execOperation(

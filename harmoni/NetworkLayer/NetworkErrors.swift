@@ -17,6 +17,7 @@ enum NetworkError: Error {
     case invalidResponse
     case forbidden
     case expiredAccessToken
+    case unprocessableEntity
     
     var localizedDescription: String {
         switch self {
@@ -38,6 +39,8 @@ enum NetworkError: Error {
             return "invalid access token"
         case .expiredAccessToken:
             return "expired access token"
+        case .unprocessableEntity:
+            return "unprocessable entity. probably wrong body schema"
         }
         
     }

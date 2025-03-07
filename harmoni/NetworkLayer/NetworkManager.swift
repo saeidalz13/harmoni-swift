@@ -42,6 +42,9 @@ final class NetworkManager: Sendable {
         case 401:
             throw NetworkError.expiredAccessToken
             
+        case 422:
+            throw NetworkError.unprocessableEntity
+            
         default:
             print("Server error: \(httpResponse)")
             throw NetworkError.serverError(code: httpResponse.statusCode)
