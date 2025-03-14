@@ -5,39 +5,43 @@
 //  Created by Saeid Alizadeh on 2025-03-02.
 //
 
-enum UserOrPartner: String {
+enum UserType: String {
     case user
     case partner
 }
 
 
 enum GraphQLResponseField {
-    case user(_ userOrPartner: UserOrPartner)
-    case id
-    case bondId
+    case user(UserType)
+    case scalar(String)
     case bond
-    case chapter
-    case moment
+    case chapter(String?)
+    case moment(String?)
     
-    var val: String {
+    var queryFragment: String {
         switch self {
-        case .user(let userOrPartner):
-            return "\(userOrPartner.rawValue) { id email firstName lastName birthDate }"
+        case .user(let userType):
+            return "\(userType.rawValue) { id email firstName lastName birthDate }"
             
-        case .id:
-            return "id"
-            
-        case .bondId:
-            return "bondId"
-            
+        case .scalar(let fieldName):
+            return fieldName
+
         case .bond:
             return "bond { id bondTitle createdAt }"
             
-        case .chapter:
-            return "chapter { id title createdAt endsAt endedAt }"
+        case .chapter(let fieldName):
+            if let fieldName = fieldName, !fieldName.isEmpty {
+                return "\(fieldName) { id title createdAt endsAt endedAt }"
+            } else {
+                return "id title createdAt endsAt endedAt"
+            }
             
-        case.moment:
-            return "moment { id type tag rating description createdAt }"
+        case .moment(let fieldName):
+            if let fieldName = fieldName, !fieldName.isEmpty {
+                return "\(fieldName) { id type tag rating description createdAt }"
+            } else {
+                return "id type tag rating description createdAt"
+            }
         }
     }
 }
@@ -45,6 +49,6 @@ enum GraphQLResponseField {
 
 extension Array where Element == GraphQLResponseField {
     func joinedResponseField(separator: String = " ") -> String {
-        map(\.val).joined(separator: separator)
+        map(\.queryFragment).joined(separator: separator)
     }
 }

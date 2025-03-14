@@ -10,6 +10,7 @@ struct ContentView: View {
     @Environment(AuthViewModel.self) private var authViewModel
     @State var homeVM: HomeViewModel = .init()
     @State var userVM: UserViewModel = .init()
+    @State var relationshipVM: RelationshipViewModel = .init()
     
     var body: some View {
         ZStack {
@@ -21,6 +22,7 @@ struct ContentView: View {
                 MainView()
                     .environment(homeVM)
                     .environment(userVM)
+                    .environment(relationshipVM)
             }
             
             if !authViewModel.isLoading && !authViewModel.isAuth {

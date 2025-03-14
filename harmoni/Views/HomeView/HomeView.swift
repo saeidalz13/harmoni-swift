@@ -8,13 +8,12 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
-    @Environment(AuthViewModel.self) private var authViewModel
-    @Environment(HomeViewModel.self) private var homeVM
+    @Environment(AuthViewModel.self) private var authVM
     @Environment(UserViewModel.self) private var userVM
 
     var body: some View {
         ScrollView {
-            if !authViewModel.isHarmoniFirstTimeUser {
+            if !authVM.isHarmoniFirstTimeUser {
                 HStack{
                     UserProfileView(user: userVM.user, isPartner: false)
                     
@@ -41,9 +40,6 @@ struct HomeView: View {
             Spacer(minLength: 120)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .task {
-             
-        }
         .animation(.easeInOut(duration: 1), value: userVM.user != nil)
     }
     

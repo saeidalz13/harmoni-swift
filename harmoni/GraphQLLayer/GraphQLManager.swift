@@ -16,9 +16,9 @@ final class GraphQLManager: Sendable {
     static let shared = GraphQLManager()
     private init() {}
     
-    let maxRetry = 2
+    private let maxRetry = 2
 
-    func execOperation<T: Codable, U: Codable>(_ operation: GraphQLOperation, variables: T? = nil, withBearer: Bool) async throws -> U {
+    func execOperation<T: Codable, U: Codable>(_ operation: GraphQLOperation, variables: T? = nil, withBearer: Bool = true) async throws -> U {
         let graphQLRequest = GraphQLRequest(
             query: operation.string,
             variables: variables
@@ -71,7 +71,7 @@ final class GraphQLManager: Sendable {
         return gqlData
     }
     
-    func renewAccessToken() async throws {
+    private func renewAccessToken() async throws {
         guard let refreshToken = KeychainManager.shared.retrieveFromKeychain(key: KeychainKey.refreshToken) else {
             throw SecurityError.unavailableToken
         }

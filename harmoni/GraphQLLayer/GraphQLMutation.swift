@@ -14,6 +14,8 @@ enum GraphQLMutation: GraphQLDefinition {
     case updateBond
     case joinBond
     
+    case createChapter
+    
     var requiresInput: Bool {
         switch self {
         case .logOut:
@@ -38,7 +40,9 @@ enum GraphQLMutation: GraphQLDefinition {
         case .renewAccessToken:
             return "id accessToken"
         case .updateBond:
-            return GraphQLResponseField.bond.val
+            return GraphQLResponseField.scalar("bondId").queryFragment
+        case .createChapter:
+            return GraphQLResponseField.chapter(nil).queryFragment
         default:
             return nil
         }

@@ -32,11 +32,11 @@ enum GraphQLQuery: GraphQLDefinition {
     var responseFields: String? {
         switch self {
         case .mostRecentChapterMoments:
-            return [.chapter, .moment].joinedResponseField()
+            return [.chapter("recentChapter"), .moment("recentMoments")].joinedResponseField()
         case .userInfo:
             return [.user(.user), .user(.partner), .bond].joinedResponseField()
         case .partnerInfo:
-            return GraphQLResponseField.user(.partner).val
+            return GraphQLResponseField.user(.partner).queryFragment
         default:
             return nil
         }

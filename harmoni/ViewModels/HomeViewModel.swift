@@ -8,5 +8,21 @@ import SwiftUI
 
 @Observable @MainActor
 final class HomeViewModel {
-
+    var recentChapter: Chapter? = nil
+    var recentMoments: [Moment] = .init()
+    
+    func fetchRecentChapterMoments(bondId: String) async throws {
+        let gqlData = try await GraphQLManager.shared.execOperation(
+            GraphQLOperationBuilder.homeSummary.build(),
+            variables: HomeSummaryInput(
+                mostRecentChapterMomentsInput: bondId
+            )
+        ) as HomeSummaryResponse
+        
+        if let recentChapterData =  gqlData.mostRecentChapterMoments {
+            self.recentChapter = recentChapterData.recentChapter
+            self.recentMoments = recentChapterData.recentMoments
+        }
+    }
+    
 }

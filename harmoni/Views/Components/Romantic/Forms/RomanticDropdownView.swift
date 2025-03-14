@@ -8,32 +8,39 @@ import SwiftUI
 
 struct RomanticDropdownView: View {
     var fieldText: String
-    @Binding var selectedAge: Int
-    var ageRange: ClosedRange<Int>
+    @Binding var varToEdit: Int?
     @State private var isExpanded = false
+    private var values: [Int]
     
-    init(fieldText: String, selectedAge: Binding<Int>, range: ClosedRange<Int> = 18...100) {
+    init(fieldText: String, varToEdit: Binding<Int?>, range: ClosedRange<Int>) {
         self.fieldText = fieldText
-        self._selectedAge = selectedAge
-        self.ageRange = range
+        self._varToEdit = varToEdit
+        self.values = Array(range)
+    }
+    
+    init(fieldText: String, varToEdit: Binding<Int?>, values: [Int]) {
+        self.fieldText = fieldText
+        self._varToEdit = varToEdit
+        self.values = values
     }
     
     var body: some View {
         VStack(spacing: 10) {
             HStack {
-                Image(systemName: "calendar")
-                    .foregroundColor(.primary.opacity(0.6))
+                Image(systemName: "123.rectangle")
+                    .foregroundColor(varToEdit == nil ? .red.opacity(0.8) : .green.opacity(0.8))
+                    .animation(.easeInOut, value: varToEdit)
                 
                 Menu {
-                    ForEach(ageRange, id: \.self) { age in
-                        Button(String(age)) {
-                            selectedAge = age
+                    ForEach(values, id: \.self) { value in
+                        Button(String(value)) {
+                            varToEdit = value
                         }
                     }
                 } label: {
                     HStack {
-                        Text(selectedAge == 0 ? fieldText : "\(selectedAge)")
-                            .foregroundColor(selectedAge == 0 ? .gray : .primary)
+                        Text(varToEdit == nil ? fieldText : "\(varToEdit!)")
+                            .foregroundColor(varToEdit == nil ? .gray.opacity(0.6) : .black)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(8)
                         
@@ -41,10 +48,11 @@ struct RomanticDropdownView: View {
                         
                         Image(systemName: "chevron.down")
                             .foregroundColor(.primary.opacity(0.6))
+                            .padding(.trailing, 5)
                     }
                     .background(
                         RoundedRectangle(cornerRadius: 15)
-                            .stroke(.primary.opacity(0.3), lineWidth: 1)
+                            .stroke(.black.opacity(0.3), lineWidth: 1)
                     )
                 }
             }

@@ -343,7 +343,7 @@ struct PageThreeView: View {
                         try await onboardingVM.joinBond(
                             firstName: firstName,
                             lastName: lastName,
-                            birthDate: DateFormatter.HarmoniFormatter.string(from: birthDate),
+                            birthDate: DateFormatter.BirthDateFormatter.string(from: birthDate),
                             bondId: bondIdToJoin
                         )
                         

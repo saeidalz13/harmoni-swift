@@ -8,49 +8,36 @@
 import SwiftUI
 
 struct RelationshipSummaryView: View {
+    @Environment(UserViewModel.self) private var userVM
+    @Environment(HomeViewModel.self) private var homeVM
+    @State var shouldRefresh = false
     
     var body: some View {
         RomanticContainer(backgroundColor: Color(red: 1.0, green: 0.98, blue: 0.92).opacity(0.8)) {
-            VStack(spacing: 5) {
-                Text("Relationship Summary")
-                    .font(.headline)
-                
-                Divider()
-                
-                HStack {
-                    // TODO: Must be the chapter title
-                    Text("🍃 Current Chapter")
-                        .font(.subheadline)
-                        .foregroundColor(.black.opacity(0.7))
-                }
-                .padding(.top, 5)
-                
-                HStack(spacing: 30) {
-                    // Cookies
-                    VStack {
-                        Text("🍪")
-                            .font(.system(size: 20))
-                        
-                        Text("\(22)")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                    }
-                    
-                    // Oopsies
-                    VStack {
-                        Text("🫢")
-                            .font(.system(size: 20))
-                        
-                        Text("\(10)")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                    }
-                }
-                .padding(.vertical, 5)
-                
+            if let chapter = homeVM.recentChapter {
+                RelationshipSummaryWithDataView(chapter: chapter, moments: homeVM.recentMoments)
+            } else {
+                RelationshipSummaryNoDataView(shouldRefresh: $shouldRefresh)
             }
+            
         }
         .padding(.horizontal)
+        .task {
+            fetchRecentChapterMoments()
+        }
+        .onChange(of: shouldRefresh) {
+            fetchRecentChapterMoments()
+        }
         
+    }
+    
+    private func fetchRecentChapterMoments() {
+        Task {
+            do {
+                try await homeVM.fetchRecentChapterMoments(bondId: userVM.bond!.id)
+            } catch {
+                print(error)
+            }
+        }
     }
 }

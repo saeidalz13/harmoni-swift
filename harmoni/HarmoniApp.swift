@@ -23,6 +23,11 @@ struct harmoniApp: App {
                 .onAppear {
                     let loadingStartTime = Date()
                     
+//                    KeychainManager.shared.removeTokenByKey(key: .isHarmoniFirstTimeUser)
+//                    authVM.signOutClient()
+//                    GIDSignIn.sharedInstance.signOut()
+//                    return
+                    
                     GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
                         if let error {
                             print("Could not restore google user sign in: \(error.localizedDescription)")

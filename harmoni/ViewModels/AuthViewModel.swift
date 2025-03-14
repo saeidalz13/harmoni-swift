@@ -70,7 +70,6 @@ final class AuthViewModel {
     }
     
     func signOutClient() {
-//        KeychainManager.shared.removeTokenByKey(key: .isHarmoniFirstTimeUser)
         KeychainManager.shared.removeTokensFromKeychain()
         GIDSignIn.sharedInstance.signOut()
         isAuth = false
