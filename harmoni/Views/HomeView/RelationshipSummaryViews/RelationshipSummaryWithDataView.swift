@@ -9,6 +9,8 @@ import SwiftUI
 struct RelationshipSummaryWithDataView: View {
     @State var chapter: Chapter
     @State var moments: [Moment]
+    @State private var showCookiePopover = false
+    @State private var showOopsiePopover = false
     
     @State private var cookiesNum: Int
     @State private var oopsiesNum: Int
@@ -32,38 +34,22 @@ struct RelationshipSummaryWithDataView: View {
     
     var body: some View {
         VStack(spacing: 5) {
-            Text("Relationship Summary")
-                .font(.headline)
+            RomanticHeaderInContainerView(header: "🍃 \(chapter.title)")
             
-            Divider()
-            
-            HStack {
-                Text("🍃 \(chapter.title)")
-                    .font(.subheadline)
-                    .foregroundColor(.black.opacity(0.7))
-            }
-            .padding(.top, 5)
-            
-            HStack(spacing: 30) {
-                VStack {
-                    Text("🍪")
-                        .font(.system(size: 20))
-                    
-                    Text("\(cookiesNum)")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                }
+            HStack(spacing: 40) {
+                SummaryMomentView(num: cookiesNum, momentTag: .cookie)
+                    .onTapGesture {
+                        showCookiePopover = true
+                    }
+                    // TODO: increase the length of the entire
 
-                VStack {
-                    Text("🫢")
-                        .font(.system(size: 20))
-                    
-                    Text("\(oopsiesNum)")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                }
+                SummaryMomentView(num: oopsiesNum, momentTag: .oopsie)
+                    .onTapGesture {
+                        showOopsiePopover = true
+                    }
+                
             }
-            .padding(.vertical, 5)
+            .padding(.vertical, 10)
         }
     }
 }

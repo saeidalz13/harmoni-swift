@@ -19,43 +19,42 @@ struct RelationshipSummaryNoDataView: View {
     var body: some View {
         VStack {
             VStack(alignment: .leading, spacing: 5) {
-                HStack {
-                    Image(systemName: "book.fill")
-                        .foregroundColor(.softPink)
-                    Text("Let's create a chapter! 🍃")
-                        .font(.avenirBold)
-                    Spacer()
-                }
-                
-                Text("Chapters help you organize your journey together. Each chapter represents a meaningful period in your relationship that you can look back on.")
-                    .font(.avenirBody)
-                
-                
-                HStack {
-                    Spacer()
-                    Text("Begin below ↓")
-                        .font(.avenirCaption)
-                        .foregroundColor(.secondary)
-                    Spacer()
-                }
-                .padding(.vertical, 10)
+                RomanticHeaderInContainerView(header: "Let's create a chapter! 🍃")
 
+                Group {
+                    Text("Chapters help you organize your journey together. Each chapter represents a meaningful period in your relationship that you can look back on.")
+                        .font(.avenirBody)
+                    
+                    HStack {
+                        Spacer()
+                        Text("Begin below ↓")
+                            .font(.avenirCaption)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 8)
             }
             
             Divider()
                 .padding(.bottom, 10)
             
+            Group {
+                RomanticTextField(fieldText: "Name this chapter", varToEdit: $chapterTitle)
+                    .padding(.bottom, 5)
+                RomanticDropdownView(
+                    fieldText: "How many days should it last?",
+                    varToEdit: $chapterDays,
+                    values: [7, 15, 30, 60, 90, 120, 180]
+                )
+                .padding(.bottom, 10)
+
+                RomanticButton(isLoading: $isLoading, text: "Begin Chapter...", action: createChapter)
+                    .padding(.bottom, 20)
+            }
+            .padding(.horizontal, 15)
             
-            RomanticTextField(fieldText: "Name this chapter", varToEdit: $chapterTitle)
-                .padding(.bottom, 5)
-            RomanticDropdownView(
-                fieldText: "How many days should it last?",
-                varToEdit: $chapterDays,
-                values: [7, 15, 30, 60, 90, 120, 180]
-            )
-            .padding(.bottom, 10)
-            
-            RomanticButton(isLoading: $isLoading, text: "Begin Chapter...", action: createChapter)
         }
         
     }

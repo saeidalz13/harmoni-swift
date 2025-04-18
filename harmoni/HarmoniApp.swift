@@ -16,6 +16,7 @@ struct harmoniApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .font(.avenirBody)
                 .environment(authVM)
                 .onOpenURL { url in
                     GIDSignIn.sharedInstance.handle(url)
@@ -27,6 +28,7 @@ struct harmoniApp: App {
 //                    authVM.signOutClient()
 //                    GIDSignIn.sharedInstance.signOut()
 //                    return
+//                    print("should not print")
                     
                     GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
                         if let error {

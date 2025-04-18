@@ -13,9 +13,14 @@ struct RelationshipSummaryView: View {
     @State var shouldRefresh = false
     
     var body: some View {
-        RomanticContainer(backgroundColor: Color(red: 1.0, green: 0.98, blue: 0.92).opacity(0.8)) {
+        RomanticContainer(
+            backgroundColor: Color(red: 1.0, green: 0.98, blue: 0.92).opacity(0.8),
+            verticalPadding: 0,
+            horizontalPadding: 0
+        ) {
             if let chapter = homeVM.recentChapter {
                 RelationshipSummaryWithDataView(chapter: chapter, moments: homeVM.recentMoments)
+                    
             } else {
                 RelationshipSummaryNoDataView(shouldRefresh: $shouldRefresh)
             }
@@ -36,6 +41,7 @@ struct RelationshipSummaryView: View {
             do {
                 try await homeVM.fetchRecentChapterMoments(bondId: userVM.bond!.id)
             } catch {
+                homeVM.resetChapterMoments()
                 print(error)
             }
         }

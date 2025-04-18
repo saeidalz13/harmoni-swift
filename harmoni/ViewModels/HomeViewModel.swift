@@ -11,6 +11,11 @@ final class HomeViewModel {
     var recentChapter: Chapter? = nil
     var recentMoments: [Moment] = .init()
     
+    func resetChapterMoments() {
+        self.recentChapter = nil
+        self.recentMoments = .init()
+    }
+    
     func fetchRecentChapterMoments(bondId: String) async throws {
         let gqlData = try await GraphQLManager.shared.execOperation(
             GraphQLOperationBuilder.homeSummary.build(),
@@ -22,6 +27,8 @@ final class HomeViewModel {
         if let recentChapterData =  gqlData.mostRecentChapterMoments {
             self.recentChapter = recentChapterData.recentChapter
             self.recentMoments = recentChapterData.recentMoments
+        } else {
+            resetChapterMoments()
         }
     }
     

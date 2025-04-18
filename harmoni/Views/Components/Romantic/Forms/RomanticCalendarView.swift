@@ -39,6 +39,7 @@ struct RomanticCalendarView: View {
                         
                         Image(systemName: "chevron.down")
                             .foregroundColor(.primary.opacity(0.6))
+                            .padding(.trailing, 5)
                     }
                     .background(
                         RoundedRectangle(cornerRadius: 15)
